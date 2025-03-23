@@ -8,7 +8,9 @@ import primitives.*;
 
 /**
  * Test program for the 1st stage
- * @author Dan Zilberstein
+ * students:
+ * 1. Tammy Rabinovitz 214667875 Rabinovitztami@gmail.com
+ * 2. Linoy Trabelsi 325722334 linoytrabelsi@gmail.com
  */
 public final class Main {
    /** A point for tests at (1,2,3) */
