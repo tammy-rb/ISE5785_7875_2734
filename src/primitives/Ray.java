@@ -36,7 +36,7 @@ public class Ray {
 
     @Override
     public String toString() {
-        return "Ray: head = " + head + "->" + direction;
+        return "Ray: head = " + head + direction;
     }
 }
 

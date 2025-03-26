@@ -38,11 +38,11 @@ public class Point {
     /**
      * Subtracts another point from this point to create a vector.
      *
-     * @param p1 The point to subtract.
+     * @param p The point to subtract.
      * @return A vector representing the difference between the two points.
      */
-    public Vector subtract(Point p1) {
-        return new Vector(xyz.subtract(p1.xyz));
+    public Vector subtract(Point p) {
+        return new Vector(xyz.subtract(p.xyz));
     }
 
     /**
@@ -58,24 +58,24 @@ public class Point {
     /**
      * Calculates the squared distance between this point and another point.
      *
-     * @param p1 The point to calculate the distance to.
+     * @param p The point to calculate the distance to.
      * @return The squared distance between the two points.
      */
-    public double distanceSquared(Point p1) {
-        double x = this.xyz.d1() - p1.xyz.d1();
-        double y = this.xyz.d2() - p1.xyz.d2();
-        double z = this.xyz.d3() - p1.xyz.d3();
+    public double distanceSquared(Point p) {
+        double x = this.xyz.d1() - p.xyz.d1();
+        double y = this.xyz.d2() - p.xyz.d2();
+        double z = this.xyz.d3() - p.xyz.d3();
         return (x * x) + (y * y) + (z * z);
     }
 
     /**
      * Calculates the distance between this point and another point.
      *
-     * @param p1 The point to calculate the distance to.
+     * @param p The point to calculate the distance to.
      * @return The distance between the two points.
      */
-    public double distance(Point p1) {
-        return Math.sqrt(distanceSquared(p1));
+    public double distance(Point p) {
+        return Math.sqrt(distanceSquared(p));
     }
 
     @Override
@@ -87,6 +87,6 @@ public class Point {
 
     @Override
     public String toString() {
-        return xyz.toString();
+        return "" + xyz;
     }
 }

@@ -50,11 +50,11 @@ public class Vector extends Point {
     /**
      * Scales this vector by a scalar value.
      *
-     * @param x The scalar value to multiply the vector by.
+     * @param scalar The scalar value to multiply the vector by.
      * @return A new vector representing the scaled vector.
      */
-    public Vector scale(double x) {
-        return new Vector(this.xyz.scale(x));
+    public Vector scale(double scalar) {
+        return new Vector(this.xyz.scale(scalar));
     }
 
     /**
@@ -115,6 +115,6 @@ public class Vector extends Point {
 
     @Override
     public String toString() {
-        return "v" + super.toString();
+        return "->" + super.toString();
     }
 }
