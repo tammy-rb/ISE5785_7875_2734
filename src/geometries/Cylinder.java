@@ -12,8 +12,9 @@ public class Cylinder extends Tube {
 
     /**
      * Constructor for creating a cylinder.
+     *
      * @param radius The radius of the cylinder.
-     * @param axis The axis along which the cylinder extends.
+     * @param axis   The axis along which the cylinder extends.
      * @param height The height of the cylinder.
      */
     public Cylinder(double radius, Ray axis, double height) {
@@ -23,6 +24,7 @@ public class Cylinder extends Tube {
 
     @Override
     public Vector getNormal(Point p) {
-        return null;  // Placeholder, normal calculation not implemented
+        super.getNormal(p);
+        return null;
     }
 }
