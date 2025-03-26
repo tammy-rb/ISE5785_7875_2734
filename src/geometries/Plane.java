@@ -12,18 +12,23 @@ public class Plane extends Geometry {
 
     /**
      * Constructor for creating a plane using three points.
+     *
      * @param p1 The first point.
      * @param p2 The second point.
      * @param p3 The third point.
      */
     public Plane(Point p1, Point p2, Point p3) {
+        Vector v1 = p2.subtract(p1);
+        Vector v2 = p3.subtract(p1);
+
         this.p = p1;
-        this.normal = null;  // Placeholder, normal calculation not implemented
+        this.normal = v1.crossProduct(v2).normalize();
     }
 
     /**
      * Constructor for creating a plane using a point and a normal vector.
-     * @param p The point on the plane.
+     *
+     * @param p      The point on the plane.
      * @param normal The normal vector to the plane.
      */
     public Plane(Point p, Vector normal) {
@@ -38,6 +43,7 @@ public class Plane extends Geometry {
 
     /**
      * Gets the normal vector of the plane.
+     *
      * @return The normal vector.
      */
     public Vector getNormal() {
