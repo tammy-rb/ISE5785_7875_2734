@@ -13,7 +13,7 @@ class VectorTest {
      * Test method for {@link primitives.Vector#Vector(double, double, double)}.
      */
     @Test
-    void testConstructorXYZ() {
+    void testVectorConstructorXYZ() {
         // =============== Boundary Values Tests ==================
         // TC11: Test constructing a zero vector using the first constructor throws an exception
         assertThrows(IllegalArgumentException.class, () -> new Vector(0, 0, 0),
@@ -24,7 +24,7 @@ class VectorTest {
      * Test method for {@link primitives.Vector#Vector(Double3)}.
      */
     @Test
-    void testConstructorDouble3() {
+    void testVectorConstructorDouble3() {
         // =============== Boundary Values Tests ==================
         // TC11: Test constructing a zero vector using the second constructor throws an exception
         Double3 zeroXYZ = new Double3(0, 0, 0);
