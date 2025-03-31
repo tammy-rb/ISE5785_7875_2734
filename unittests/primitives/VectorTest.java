@@ -77,50 +77,50 @@ class VectorTest {
 
     /**
      * Unit tests for {@link Vector#dotProduct(Vector)} method.
-     * Tests the dot product calculation for vectors with various angles between them.
-     *
-     * @author Your Name
      */
     @Test
     void testDotProduct() {
         // Vectors for testing
-        Vector v1 = new Vector(1, 2, 3); // A vector with components (1, 2, 3)
-        Vector vSharp = new Vector(-2, -4, -6); // A vector with a sharp angle with v1
-        Vector v1Orthogonal = new Vector(0, 3, -2); // A vector orthogonal to v1
-        Vector vObtuse = new Vector(-1, -1, 0); // A vector with an obtuse angle with v1
+        Vector v1 = new Vector(1, 2, 3); // A base vector (1,2,3)
+        Vector vAcute = new Vector(2, 3, 4); // A vector forming an acute (sharp) angle with v1
+        Vector vObtuse = new Vector(-1, -1, 0); // A vector forming an obtuse angle with v1
+        Vector vOrthogonal = new Vector(0, 3, -2); // A vector orthogonal to v1
+        Vector vParallel = new Vector(-2, -4, -6); // A vector anti-parallel (180 degrees) to v1
 
         // ============ Equivalence Partitions Tests ==============
 
-        // TC01: Test dot product between vectors with a sharp angle
-        // The angle between v1 and vSharp is less than 90 degrees.
+        // TC01: Test dot product between vectors with an acute (sharp) angle
         // The dot product should be positive.
+        assertTrue(v1.dotProduct(vAcute) > 0,
+                "ERROR: dotProduct() for acute angle vectors should be positive");
 
-        assertTrue(v1.dotProduct(vSharp) > 0,
-                "ERROR: dotProduct() for sharp angle vectors should be positive");
-
-        // Check if the actual dot product value is correct (expected value: 28)
-        assertEquals(28, v1.dotProduct(vSharp), 0.00001,
-                "ERROR: dotProduct() wrong value for vectors");
+        // Verify expected value (computed manually)
+        assertEquals(20, v1.dotProduct(vAcute), 0.00001,
+                "ERROR: dotProduct() wrong value for acute vectors");
 
         // TC02: Test dot product between vectors with an obtuse angle
-        // The angle between v1 and vObtuse is greater than 90 degrees.
         // The dot product should be negative.
-
         assertTrue(v1.dotProduct(vObtuse) < 0,
                 "ERROR: dotProduct() for obtuse angle vectors should be negative");
 
-        // Check if the actual dot product value is correct (expected value: -3)
+        // Verify expected value
         assertEquals(-3, v1.dotProduct(vObtuse), 0.00001,
-                "ERROR: dotProduct() wrong value for vectors");
+                "ERROR: dotProduct() wrong value for obtuse vectors");
 
         // =============== Boundary Values Tests ==================
 
         // TC11: Test dot product between orthogonal vectors
-        // The angle between v1 and v1Orthogonal is 90 degrees.
-        // The dot product should be zero as they are orthogonal.
-        assertEquals(0, v1.dotProduct(v1Orthogonal), 0.00001,
+        // The dot product should be zero.
+        assertEquals(0, v1.dotProduct(vOrthogonal), 0.00001,
                 "ERROR: dotProduct() for orthogonal vectors is not zero");
+
+        // TC12: Test dot product between vector to itself. angle = 0
+        // the dot products should be the squared length of the vector
+        assertEquals(0, v1.dotProduct(v1)- v1.lengthSquared(), 0.00001,
+                "ERROR: dotProduct() between vector to itself is wrong");
+
     }
+
 
     /**
      * Unit test for the {@link Vector#crossProduct(Vector)} method.
@@ -153,7 +153,7 @@ class VectorTest {
                 "ERROR: crossProduct() result is not orthogonal to 2nd operand");
 
         // Verify that the resulting vector matches the expected result (orthogonal vector)
-        assertEquals(new Vector(0, 1, 0), vr,
+        assertEquals(new Vector(2, -10, 6), vr,
                 "ERROR: Vector crossProduct does not work correctly");
 
         // =============== Boundary Values Tests ==================
@@ -218,7 +218,7 @@ class VectorTest {
 
         // TC03: Test that the dot product between the original vector and the normalized vector
         // is negative, meaning they are pointing in opposite directions.
-        assertTrue(v.dotProduct(normalized) < 0,
+        assertTrue(v.dotProduct(normalized) > 0,
                 "ERROR: the normalized vector is opposite to the original one");
     }
 
