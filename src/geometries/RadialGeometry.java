@@ -8,13 +8,10 @@ public abstract class RadialGeometry extends Geometry {
 
     /**
      * Constructor for RadialGeometry.
+     *
      * @param radius The radius of the radial geometry.
      */
     public RadialGeometry(double radius) {
         this.radius = radius;
-    }
-
-    public double getRadius() {
-        return radius;
     }
 }

@@ -5,7 +5,16 @@ import primitives.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link geometries.Tube} class.
+ */
 class TubeTest {
+
+    /**
+     * Delta value for accuracy when comparing the numbers of type 'double' in
+     * assertEquals
+     */
+    private static final double DELTA = 0.000001;
 
     @Test
     void testGetNormal() {
@@ -32,10 +41,12 @@ class TubeTest {
         Vector expectedNormal = new Vector(1, 0, 0);
 
         // Ensure the normal is correct
-        assertEquals(expectedNormal, normal, "ERROR: Incorrect normal computed");
+        assertEquals(expectedNormal, normal,
+                "ERROR: Incorrect normal computed");
 
         // Ensure the normal is a unit vector
-        assertEquals(1, normal.length(), 0.00001, "ERROR: Normal is not a unit vector");
+        assertEquals(1, normal.length(), DELTA,
+                "ERROR: Normal is not a unit vector");
 
         // =============== Boundary Values Tests ==================
         // TC11: Test for boundary case where point is orthogonal to the ray vector
@@ -52,9 +63,11 @@ class TubeTest {
         Vector expectedNormalBVA = p_bva.subtract(p0);
 
         // Ensure the normal is correct for the boundary value
-        assertEquals(expectedNormalBVA, normalBVA, "ERROR: Incorrect normal computed for orthogonal point");
+        assertEquals(expectedNormalBVA, normalBVA,
+                "ERROR: Incorrect normal computed for orthogonal point");
 
         // Ensure the normal is a unit vector
-        assertEquals(1, normalBVA.length(), 0.00001, "ERROR: Normal for BVA point is not a unit vector");
+        assertEquals(1, normalBVA.length(), DELTA,
+                "ERROR: Normal for BVA point is not a unit vector");
     }
 }

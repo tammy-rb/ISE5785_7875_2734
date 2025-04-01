@@ -8,6 +8,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit tests for {@link primitives.Point} class.
  */
 class PointTests {
+    /**
+     * Delta value for accuracy when comparing the numbers of type 'double' in
+     * assertEquals
+     */
+    private static final double DELTA = 0.000001;
 
     /**
      * Test method for {@link primitives.Point#subtract(primitives.Point)}.
@@ -57,16 +62,16 @@ class PointTests {
         Point p2 = new Point(2, 4, 5);
 
         // TC01: Test squared distance between two distinct points
-        assertEquals(9, p1.distanceSquared(p2), 0.00001,
+        assertEquals(9, p1.distanceSquared(p2), DELTA,
                 "ERROR: squared distance between points is wrong");
 
         // TC02: Test squared distance is symmetric (p1 to p2 equals p2 to p1)
-        assertEquals(9, p2.distanceSquared(p1), 0.00001,
+        assertEquals(9, p2.distanceSquared(p1), DELTA,
                 "ERROR: squared distance between points is wrong");
 
         // =============== Boundary Values Tests ==================
         // TC11: Test squared distance from a point to itself is zero
-        assertEquals(0, p1.distanceSquared(p1), 0.00001,
+        assertEquals(0, p1.distanceSquared(p1), DELTA,
                 "ERROR: point squared distance to itself is not zero");
     }
 
@@ -80,16 +85,16 @@ class PointTests {
         Point p2 = new Point(2, 4, 5);
 
         // TC01: Test distance between two distinct points
-        assertEquals(3, p1.distance(p2), 0.00001,
+        assertEquals(3, p1.distance(p2), DELTA,
                 "ERROR: distance between points is wrong");
 
         // TC02: Test distance is symmetric (p1 to p2 equals p2 to p1)
-        assertEquals(3, p2.distance(p1), 0.00001,
+        assertEquals(3, p2.distance(p1), DELTA,
                 "ERROR: distance between points is wrong");
 
         // =============== Boundary Values Tests ==================
         // TC11: Test distance from a point to itself is zero
-        assertEquals(0, p1.distance(p1), 0.00001,
+        assertEquals(0, p1.distance(p1), DELTA,
                 "ERROR: point distance to itself is not zero");
     }
 }

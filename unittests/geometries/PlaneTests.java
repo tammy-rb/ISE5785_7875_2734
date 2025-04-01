@@ -6,7 +6,16 @@ import primitives.Vector;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link geometries.Plane} class.
+ */
 class PlaneTests {
+
+    /**
+     * Delta value for accuracy when comparing the numbers of type 'double' in
+     * assertEquals
+     */
+    private static final double DELTA = 0.000001;
 
     /**
      * Test method for
@@ -32,17 +41,16 @@ class PlaneTests {
         Vector normal = plane.getNormal();
 
         // Check if the normal is orthogonal to both vectors in the plane
-        assertEquals(0, normal.dotProduct(v1), 0.00001,
+        assertEquals(0, normal.dotProduct(v1), DELTA,
                 "ERROR: normal of plane is not orthogonal to v1");
-        assertEquals(0, normal.dotProduct(v2), 0.00001,
+        assertEquals(0, normal.dotProduct(v2), DELTA,
                 "ERROR: normal of plane is not orthogonal to v2");
 
-        // Check that the normal is normalized (length = 1)
-        assertEquals(0, normal.length() - 1, 0.00001,
+        // Check if the normal is normalized (length = 1)
+        assertEquals(0, normal.length() - 1, DELTA,
                 "ERROR: normal vector is not normalized");
 
         // =============== Boundary Values Tests ==================
-
         // TC11: Test with two identical points (p1 == p2)
         assertThrows(IllegalArgumentException.class, () -> new Plane(p1, p1, p3),
                 "ERROR: constructed a plane with 2 identical points");
@@ -65,7 +73,6 @@ class PlaneTests {
         Point p6 = new Point(3, 3, 3);
         assertThrows(IllegalArgumentException.class, () -> new Plane(p4, p5, p6),
                 "ERROR: constructed a plane with 3 points on the same line");
-
     }
 
     /**
@@ -74,7 +81,7 @@ class PlaneTests {
     @Test
     void testGetNormal() {
         // ============ Equivalence Partitions Tests ==============
-        // TC01: Check normal calculation with three non-collinear points
+        // TC01: Checking normal calculation with three non-collinear points
         Point[] pts = {
                 new Point(0, 0, 0),
                 new Point(0, 0, 1),
@@ -82,20 +89,20 @@ class PlaneTests {
         };
         Plane plane = new Plane(pts[0], pts[1], pts[2]);
 
-        // Ensure no exceptions are thrown
+        // Ensuring no exceptions are thrown
         assertDoesNotThrow(() -> plane.getNormal(pts[1]),
                 "ERROR: getting normal of plane throws an unnecessary exception");
 
-        // Generate the test result
+        // Generating the test result
         Vector normal = plane.getNormal(pts[1]);
 
-        // Ensure the normal is a unit vector
-        assertEquals(1, normal.length(), 0.00001,
+        // Ensuring the normal is a unit vector
+        assertEquals(1, normal.length(), DELTA,
                 "Plane's normal is not a unit vector");
 
-        // Ensure the normal is orthogonal to the plane's edges
+        // Ensuring the normal is orthogonal to the plane's edges
         for (int i = 0; i < 3; ++i) {
-            assertEquals(0d, normal.dotProduct(pts[i].subtract(pts[i == 0 ? 2 : i - 1])), 0.0001,
+            assertEquals(0d, normal.dotProduct(pts[i].subtract(pts[i == 0 ? 2 : i - 1])), DELTA,
                     "Plane's normal is not orthogonal to one of the vectors");
         }
     }
