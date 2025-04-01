@@ -6,6 +6,9 @@ import primitives.Vector;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link geometries.Sphere} class.
+ */
 class SphereTest {
 
     /**
@@ -22,7 +25,7 @@ class SphereTest {
         // TC01: Basic sphere
         Sphere sp = new Sphere(1, center);
 
-        // ensure there are no exceptions and get normal work correctly
+        // ensure there are no exceptions and getNormal work correctly
         assertDoesNotThrow(() -> sp.getNormal(new Point(0, 0, 1)),
                 "ERROR: getNormal() should not throw an exception");
 

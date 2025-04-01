@@ -8,6 +8,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit tests for {@link primitives.Vector} class.
  */
 class VectorTest {
+    /**
+     * Delta value for accuracy when comparing the numbers of type 'double' in
+     * assertEquals
+     */
+    private static final double DELTA = 0.000001;
 
     /**
      * Test method for {@link primitives.Vector#Vector(double, double, double)}.
@@ -85,17 +90,15 @@ class VectorTest {
         Vector vAcute = new Vector(2, 3, 4); // A vector forming an acute (sharp) angle with v1
         Vector vObtuse = new Vector(-1, -1, 0); // A vector forming an obtuse angle with v1
         Vector vOrthogonal = new Vector(0, 3, -2); // A vector orthogonal to v1
-        Vector vParallel = new Vector(-2, -4, -6); // A vector anti-parallel (180 degrees) to v1
 
         // ============ Equivalence Partitions Tests ==============
-
         // TC01: Test dot product between vectors with an acute (sharp) angle
         // The dot product should be positive.
         assertTrue(v1.dotProduct(vAcute) > 0,
                 "ERROR: dotProduct() for acute angle vectors should be positive");
 
         // Verify expected value (computed manually)
-        assertEquals(20, v1.dotProduct(vAcute), 0.00001,
+        assertEquals(20, v1.dotProduct(vAcute), DELTA,
                 "ERROR: dotProduct() wrong value for acute vectors");
 
         // TC02: Test dot product between vectors with an obtuse angle
@@ -104,23 +107,20 @@ class VectorTest {
                 "ERROR: dotProduct() for obtuse angle vectors should be negative");
 
         // Verify expected value
-        assertEquals(-3, v1.dotProduct(vObtuse), 0.00001,
+        assertEquals(-3, v1.dotProduct(vObtuse), DELTA,
                 "ERROR: dotProduct() wrong value for obtuse vectors");
 
         // =============== Boundary Values Tests ==================
-
         // TC11: Test dot product between orthogonal vectors
         // The dot product should be zero.
-        assertEquals(0, v1.dotProduct(vOrthogonal), 0.00001,
+        assertEquals(0, v1.dotProduct(vOrthogonal), DELTA,
                 "ERROR: dotProduct() for orthogonal vectors is not zero");
 
         // TC12: Test dot product between vector to itself. angle = 0
         // the dot products should be the squared length of the vector
-        assertEquals(0, v1.dotProduct(v1)- v1.lengthSquared(), 0.00001,
+        assertEquals(0, v1.dotProduct(v1) - v1.lengthSquared(), DELTA,
                 "ERROR: dotProduct() between vector to itself is wrong");
-
     }
-
 
     /**
      * Unit test for the {@link Vector#crossProduct(Vector)} method.
@@ -135,13 +135,12 @@ class VectorTest {
         Vector v1Parallel = new Vector(-2, -4, -6); // v1Parallel is a scalar multiple of v1 (parallel vector)
 
         // ============ Equivalence Partitions Tests ==============
-
         // TC01: Test the cross-product between two non-parallel vectors
         // Perform cross-product between v1 and v2
         Vector vr = v1.crossProduct(v2);
 
         // Verify the length of the cross-product: It should be the product of the lengths of v1 and v2
-        assertEquals(v1.length() * v2.length(), vr.length(), 0.00001,
+        assertEquals(v1.length() * v2.length(), vr.length(), DELTA,
                 "ERROR: crossProduct() wrong result length");
 
         // Verify that the cross-product result is orthogonal to the first operand (v1)
@@ -157,7 +156,6 @@ class VectorTest {
                 "ERROR: Vector crossProduct does not work correctly");
 
         // =============== Boundary Values Tests ==================
-
         // TC11: Test for zero vector from cross-product of parallel vectors
         // v1Parallel is parallel to v1, so the cross-product should result in a zero vector
         assertThrows(IllegalArgumentException.class, () -> v1.crossProduct(v1Parallel),
@@ -238,14 +236,12 @@ class VectorTest {
         // ============ Equivalence Partitions Tests ==============
         // TC01: Test subtracting a Point from a Vector (valid operation)
         // Subtracting the point p1 from vector v should result in a new vector.
-        //
         assertEquals(new Vector(3, 6, 9), v.subtract(p1),
                 "ERROR: Vector - Point does not work correctly");
 
         // =============== Boundary Values Tests ==================
         // TC11: Test subtracting a Point from a vector where the Point is the same as the vector
         // This should throw an IllegalArgumentException as subtracting a point from itself is an invalid operation.
-        //
         assertThrows(IllegalArgumentException.class, () -> v.subtract(p2),
                 "ERROR: Vector - its point does not throw an exception");
     }

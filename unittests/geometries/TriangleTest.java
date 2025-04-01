@@ -6,6 +6,9 @@ import primitives.Vector;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link geometries.Triangle} class.
+ */
 class TriangleTest {
 
     /**

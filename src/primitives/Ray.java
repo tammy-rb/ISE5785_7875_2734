@@ -19,7 +19,7 @@ public class Ray {
      * Constructs a ray with a given starting point and direction vector.
      * The direction vector is normalized upon creation.
      *
-     * @param head The starting point of the ray.
+     * @param head      The starting point of the ray.
      * @param direction The direction vector of the ray.
      */
     public Ray(Point head, Vector direction) {

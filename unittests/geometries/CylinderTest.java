@@ -5,6 +5,9 @@ import primitives.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link geometries.Cylinder} class.
+ */
 class CylinderTest {
 
     /**
@@ -57,5 +60,4 @@ class CylinderTest {
         assertEquals(axisDirection, cylinder.getNormal(p_edgeTop),
                 "ERROR: Incorrect normal at top base edge");
     }
-
 }
