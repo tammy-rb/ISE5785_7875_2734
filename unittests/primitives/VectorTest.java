@@ -161,7 +161,7 @@ class VectorTest {
         assertThrows(IllegalArgumentException.class, () -> v1.crossProduct(v1Parallel),
                 "ERROR: crossProduct() for parallel vectors does not throw an exception");
 
-        // Test cross-product with itself: It should result in a zero vector since the vectors are parallel
+        // TC12: Test cross-product with itself: It should result in a zero vector since the vectors are parallel
         assertThrows(IllegalArgumentException.class, () -> v1.crossProduct(v1),
                 "ERROR: crossProduct() for parallel vectors does not throw an exception");
     }
@@ -209,13 +209,11 @@ class VectorTest {
         assertEquals(0, normalized.length() - 1,
                 "ERROR: the normalized vector is not a unit vector");
 
-        // TC02: Test that the cross product between the original vector and the normalized vector
-        // should result in a zero vector, as they are parallel (normalized vector is a scaled version)
+        // check that the normalized vector parallel to the original
         assertThrows(IllegalArgumentException.class, () -> v.crossProduct(normalized),
                 "ERROR: the normalized vector is not parallel to the original one");
 
-        // TC03: Test that the dot product between the original vector and the normalized vector
-        // is negative, meaning they are pointing in opposite directions.
+        // check that the normalized the same direction as the original
         assertTrue(v.dotProduct(normalized) > 0,
                 "ERROR: the normalized vector is opposite to the original one");
     }
