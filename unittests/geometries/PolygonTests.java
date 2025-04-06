@@ -155,5 +155,4 @@ class PolygonTests {
         final var result13 = polygon.findIntersections(ray13);
         assertNull(result13, "Ray intersects exactly on edge — should return null");
     }
-
 }
