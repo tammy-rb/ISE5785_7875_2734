@@ -59,14 +59,14 @@ class PointTests {
     void testDistanceSquared() {
         // ============ Equivalence Partitions Tests ==============
         Point p1 = new Point(1, 2, 3);
-        Point p2 = new Point(2, 4, 5);
+        Point p2 = new Point(4, 4, 5);
 
         // TC01: Test squared distance between two distinct points
-        assertEquals(9, p1.distanceSquared(p2), DELTA,
+        assertEquals(17, p1.distanceSquared(p2), DELTA,
                 "ERROR: squared distance between points is wrong");
 
         // TC02: Test squared distance is symmetric (p1 to p2 equals p2 to p1)
-        assertEquals(9, p2.distanceSquared(p1), DELTA,
+        assertEquals(17, p2.distanceSquared(p1), DELTA,
                 "ERROR: squared distance between points is wrong");
 
         // =============== Boundary Values Tests ==================

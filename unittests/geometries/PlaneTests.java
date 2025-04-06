@@ -47,7 +47,7 @@ class PlaneTests {
                 "ERROR: normal of plane is not orthogonal to v2");
 
         // Check if the normal is normalized (length = 1)
-        assertEquals(0, normal.length() - 1, DELTA,
+        assertEquals(1, normal.length(), DELTA,
                 "ERROR: normal vector is not normalized");
 
         // =============== Boundary Values Tests ==================
@@ -105,5 +105,10 @@ class PlaneTests {
             assertEquals(0d, normal.dotProduct(pts[i].subtract(pts[i == 0 ? 2 : i - 1])), DELTA,
                     "Plane's normal is not orthogonal to one of the vectors");
         }
+    }
+
+    @Test
+    void testFindIntersections() {
+
     }
 }

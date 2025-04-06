@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit tests for {@link geometries.Tube} class.
  */
-class TubeTest {
+class TubeTests {
 
     /**
      * Delta value for accuracy when comparing the numbers of type 'double' in
@@ -38,10 +38,7 @@ class TubeTest {
         Vector normal = tube.getNormal(p_surface);
 
         // Expected normal: from the tube's axis (0,0,2) to (1,0,2) → (1,0,0)
-        Vector expectedNormal = new Vector(1, 0, 0);
-
-        // Ensure the normal is correct
-        assertEquals(expectedNormal, normal,
+        assertEquals(new Vector(1, 0, 0), normal,
                 "ERROR: Incorrect normal computed");
 
         // Ensure the normal is a unit vector
@@ -69,5 +66,9 @@ class TubeTest {
         // Ensure the normal is a unit vector
         assertEquals(1, normalBVA.length(), DELTA,
                 "ERROR: Normal for BVA point is not a unit vector");
+    }
+
+    @Test
+    void testFindIntersections() {
     }
 }

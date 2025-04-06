@@ -4,6 +4,10 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.List;
+
+import static primitives.Util.isZero;
+
 /**
  * Represents a cylinder, which is a special case of a tube with height.
  */
@@ -32,15 +36,21 @@ public class Cylinder extends Tube {
             return v.scale(-1);
         if (p.equals(p1))
             return v;
+
         // Project point onto the cylinder's axis
         Vector u = p.subtract(p0);
         double t = v.dotProduct(u);
 
         // point is on a base or on its edge
-        if (t == 0) return v.scale(-1); // Bottom base center, normal is -v
-        if (t == height) return v; // Top base center, normal is v
+        if (isZero(t)) return v.scale(-1); // Bottom base center, normal is -v
+        if (isZero(t-height)) return v; // Top base center, normal is v
 
         Point o = p0.add(v.scale(t)); // Projection onto axis
         return p.subtract(o).normalize(); // Normal to surface
+    }
+
+    @Override
+    public List<Point> findIntersections(Ray ray) {
+        return super.findIntersections(ray);
     }
 }
