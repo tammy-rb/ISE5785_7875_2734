@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit tests for {@link primitives.Vector} class.
  */
-class VectorTest {
+class VectorTests {
     /**
      * Delta value for accuracy when comparing the numbers of type 'double' in
      * assertEquals
@@ -144,11 +144,11 @@ class VectorTest {
                 "ERROR: crossProduct() wrong result length");
 
         // Verify that the cross-product result is orthogonal to the first operand (v1)
-        assertEquals(0, vr.dotProduct(v1),
+        assertEquals(0, vr.dotProduct(v1), DELTA,
                 "ERROR: crossProduct() result is not orthogonal to 1st operand");
 
         // Verify that the cross-product result is orthogonal to the second operand (v2)
-        assertEquals(0, vr.dotProduct(v2),
+        assertEquals(0, vr.dotProduct(v2), DELTA,
                 "ERROR: crossProduct() result is not orthogonal to 2nd operand");
 
         // Verify that the resulting vector matches the expected result (orthogonal vector)
@@ -172,10 +172,10 @@ class VectorTest {
     @Test
     void testLengthSquared() {
         // ============ Equivalence Partitions Tests ==============
-        Vector v = new Vector(3, 4, 0);
+        Vector v = new Vector(4, 4, 0);
 
         // TC01: Test squared length of a vector
-        assertEquals(25, v.lengthSquared(),
+        assertEquals(32, v.lengthSquared(), DELTA,
                 "ERROR: lengthSquared() wrong value");
     }
 
@@ -188,7 +188,7 @@ class VectorTest {
         Vector v = new Vector(3, 4, 0);
 
         // TC01: Test length of a vector
-        assertEquals(5, v.length(),
+        assertEquals(5, v.length(), DELTA,
                 "ERROR: length() wrong value");
     }
 
@@ -206,7 +206,7 @@ class VectorTest {
 
         // Check if the length of the normalized vector is 1 (unit vector)
         // The difference between the length of the normalized vector and 1 should be 0
-        assertEquals(0, normalized.length() - 1,
+        assertEquals(1, normalized.length(), DELTA,
                 "ERROR: the normalized vector is not a unit vector");
 
         // check that the normalized vector parallel to the original

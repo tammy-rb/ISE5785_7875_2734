@@ -1,13 +1,15 @@
 package geometries;
 
 import primitives.Point;
+import primitives.Ray;
+
+import java.util.List;
 
 /**
  * Triangle class represents a triangle in 3D Cartesian coordinate system.
  * It inherits from Polygon since a triangle is a polygon with 3 vertices.
  */
 public class Triangle extends Polygon {
-
     /**
      * Constructor for Triangle using three points.
      *
@@ -18,4 +20,10 @@ public class Triangle extends Polygon {
     public Triangle(Point p1, Point p2, Point p3) {
         super(p1, p2, p3);
     }
+
+    @Override
+    public List<Point> findIntersections(Ray ray) {
+        return super.findIntersections(ray);
+    }
+
 }

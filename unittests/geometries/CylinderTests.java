@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit tests for {@link geometries.Cylinder} class.
  */
-class CylinderTest {
+class CylinderTests {
 
     /**
      * Test method for {@link geometries.Cylinder#getNormal(primitives.Point)}.
@@ -59,5 +59,9 @@ class CylinderTest {
         Point p_edgeTop = new Point(1, 0, 5);
         assertEquals(axisDirection, cylinder.getNormal(p_edgeTop),
                 "ERROR: Incorrect normal at top base edge");
+    }
+
+    @Test
+    void testFindIntersections() {
     }
 }
