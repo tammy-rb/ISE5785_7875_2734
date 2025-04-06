@@ -127,7 +127,7 @@ class PlaneTests {
         assertEquals(expected01, result01, "Intersection point with the plane is incorrect");
 
         // TC02: Ray isn't orthogonal nor parallel to the plane and doesn't intersect it
-        final Ray ray02 = new Ray(new Point(1, 2, 2), new Vector(0, -1, 0));
+        final Ray ray02 = new Ray(new Point(1, 2, 2), new Vector(0, 1, 0));
         final var result02 = plane.findIntersections(ray02);
         assertNull(result02, "Ray doesn't intersect the plane — should return null");
 

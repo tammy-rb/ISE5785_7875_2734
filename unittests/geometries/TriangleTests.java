@@ -56,60 +56,50 @@ class TriangleTests {
      */
     @Test
     void testFindIntersections() {
-        final Point gp1 = new Point(0, 1, 0);
-        final Point gp2 = new Point(4, 1, 0);
-        final Point gp3 = new Point(4, 5, 0);
-        final Point gp4 = new Point(0, 5, 0);
-        final Polygon polygon = new Polygon(new Point[]{gp1, gp2, gp3, gp4});
+
+        Triangle triangle = new Triangle(
+                new Point(1, 1, 0),
+                new Point(4, 1, 0),
+                new Point(1, 3, 0)
+        );
 
         // ============ Equivalence Partitions Tests ==============
 
-        // TC01: Ray intersects inside the polygon (1 point)
-        final Point p01 = new Point(-1, -1, -4);
-        final Vector v01 = new Vector(4, 2, 2);
-        final Ray ray01 = new Ray(p01, v01);
-        final Point intersectionPoint01 = new Point(3, 1, 0);
-        final var expected01 = List.of(intersectionPoint01);
-        final var result01 = polygon.findIntersections(ray01);
-        assertNotNull(result01, "Ray intersects inside the polygon — result should not be null");
+        // TC01: Ray intersects inside the triangle (1 point)
+        final Ray ray01 = new Ray(new Point(2, 1.5, -1), new Vector(0, 0, 1));
+        final var expected01 = List.of(new Point(2, 1.5, 0));
+        final var result01 = triangle.findIntersections(ray01);
+        assertNotNull(result01, "Ray intersects inside the triangle — result should not be null");
         assertEquals(1, result01.size(), "Wrong number of intersection points");
-        assertEquals(expected01, result01, "Intersection point inside polygon is incorrect");
+        assertEquals(expected01, result01, "Intersection point inside triangle is incorrect");
 
-        // TC02: Ray intersects outside the polygon against an edge (0 points)
-        final Point p02 = new Point(-3, -3, -6);
-        final Vector v02 = new Vector(4, 6, 6);
-        final Ray ray02 = new Ray(p02, v02);
-        final var result02 = polygon.findIntersections(ray02);
-        assertNull(result02, "Ray intersects outside polygon against edge — should return null");
+        // TC02: Ray intersects outside the triangle against an edge (0 points)
+        final Ray ray02 = new Ray(new Point(0, 2, -1), new Vector(0, 0, 1));
+        final var result02 = triangle.findIntersections(ray02);
+        assertNull(result02, "Ray intersects outside triangle against edge — should return null");
 
-        // TC03: Ray intersects outside the polygon against a vertex (0 points)
-        final Point p03 = new Point(-2, -1, -4);
-        final Vector v03 = new Vector(3, 0, 4);
-        final Ray ray03 = new Ray(p03, v03);
-        final var result03 = polygon.findIntersections(ray03);
-        assertNull(result03, "Ray intersects outside polygon against vertex — should return null");
+        // TC03: Ray intersects outside the triangle against a vertex (0 points)
+        final Ray ray03 = new Ray(new Point(0, 0, -1), new Vector(0, 0, 1));
+        final var result03 = triangle.findIntersections(ray03);
+        assertNull(result03, "Ray intersects outside triangle against vertex — should return null");
 
         // =============== Boundary Values Tests ==================
 
-        // TC11: Ray intersects exactly on an edge continues (0 points)
-        final Point p11 = new Point(1, 0, -3);
-        final Vector v11 = new Vector(1, 0, 3);
-        final Ray ray11 = new Ray(p11, v11);
-        final var result11 = polygon.findIntersections(ray11);
-        assertNull(result11, "Ray intersects on an edge continues — should return null");
+        // TC11: Ray intersects exactly on an edge (0 points per Moller implementation)
+        final Ray ray11 = new Ray(new Point(2.5, 1, -1), new Vector(0, 0, 1));
+        final var result11 = triangle.findIntersections(ray11);
+        assertNull(result11, "Ray intersects on an edge — should return null");
 
-        // TC12: Ray intersects exactly on a vertex (0 points)
-        final Point p12 = new Point(-1, -3, -1);
-        final Vector v12 = new Vector(3, 3, 1);
-        final Ray ray12 = new Ray(p12, v12);
-        final var result12 = polygon.findIntersections(ray12);
+        // TC12: Ray intersects exactly on a vertex
+        final Ray ray12 = new Ray(new Point(1, 1, -1), new Vector(0, 0, 1));
+        final var result12 = triangle.findIntersections(ray12);
         assertNull(result12, "Ray intersects exactly on a vertex — should return null");
 
-        // TC13: Ray intersects exactly on an edge (0 points)
-        final Point p13 = new Point(-4, -3, -2);
-        final Vector v13 = new Vector(6, 6, 2);
-        final Ray ray13 = new Ray(p13, v13);
-        final var result13 = polygon.findIntersections(ray13);
-        assertNull(result13, "Ray intersects exactly on edge — should return null");
+        // TC13: Ray intersects exactly on an edge continuation (0 points)
+        final Ray ray13 = new Ray(new Point(5, 1, -1), new Vector(0, 0, 1));
+        final var result13 = triangle.findIntersections(ray13);
+        assertNull(result13, "Ray intersects on edge continuation — should return null");
+
     }
+
 }
