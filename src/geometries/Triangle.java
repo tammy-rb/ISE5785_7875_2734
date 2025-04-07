@@ -4,6 +4,7 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static primitives.Util.isZero;
@@ -26,49 +27,28 @@ public class Triangle extends Polygon {
 
     @Override
     public List<Point> findIntersections(Ray ray) {
-        Point p0 = ray.getHead();
-        Vector dir = ray.getDirection();
-
-        Point v0 = vertices.get(0);
-        Point v1 = vertices.get(1);
-        Point v2 = vertices.get(2);
-
-        if (p0.equals(v0) || p0.equals(v1) || p0.equals(v2)) {
-            return null;
-        }
-
-        Vector edge1 = v1.subtract(v0);
-        Vector edge2 = v2.subtract(v0);
+        var intersections = this.plane.findIntersections(ray);
+        if (intersections == null) return null;
+        Point p = intersections.getFirst();
+        Point p0 = vertices.get(0);
+        Point p1 = vertices.get(1);
+        Point p2 = vertices.get(2);
+        if (p.equals(p0) || p.equals(p1) || p.equals(p2)) return null;
+        Vector n1, n2, n3;
         try{
-            dir.crossProduct(edge2);
+            n1 = p1.subtract(p0).crossProduct(p0.subtract(p));
+            n2 = p2.subtract(p1).crossProduct(p1.subtract(p));
+            n3 = p0.subtract(p2).crossProduct(p2.subtract(p));
         }
-        catch (IllegalArgumentException e){
+        catch(IllegalArgumentException e){ // normal is 0 - p is on a edge or edge contieues
             return null;
         }
-        Vector h = dir.crossProduct(edge2);
-        double a = edge1.dotProduct(h);
-
-        if (isZero(a)) return null; // Ray is parallel to triangle
-
-        double f = 1.0 / a;
-        Vector s = p0.subtract(v0);
-        double u = f * s.dotProduct(h);
-        if (u <= 0 || u >= 1) return null; // Exclude edges/vertices
-
-        try{
-            s.crossProduct(edge1);
+        // Check if all normals point in the same direction
+        double d1 = n1.dotProduct(n2);
+        double d2 = n1.dotProduct(n3);
+        if (d1 > 0 && d2 > 0 || d1 < 0 && d2 < 0) {
+            return intersections;
         }
-        catch (IllegalArgumentException e){
-            return null;
-        }
-        Vector q = s.crossProduct(edge1);
-        double v = f * dir.dotProduct(q);
-        if (v <= 0 || v >= 1 || u + v >= 1) return null; // Exclude edges/vertices
-
-        double t = f * edge2.dotProduct(q);
-        if (t <= 0) return null; // Exclude intersections at or behind ray origin
-
-        Point intersection = p0.add(dir.scale(t));
-        return List.of(intersection);
+        return null;
     }
 }
