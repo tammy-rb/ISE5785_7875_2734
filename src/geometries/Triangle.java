@@ -45,7 +45,7 @@ public class Triangle extends Polygon {
         // Check if all normals point in the same direction
         double d1 = n1.dotProduct(n2);
         double d2 = n1.dotProduct(n3);
-        if (d1 > 0 && d2 > 0 || d1 < 0 && d2 < 0) {
+        if (d1 > 0 && d2 > 0) {
             return intersections;
         }
         return null;

@@ -57,18 +57,21 @@ public class Geometries implements Intersectable {
      * @param ray The ray to test for intersections
      * @return A list of unique intersection points, or null if none found
      */
-    @Override
     public List<Point> findIntersections(Ray ray) {
-        Set<Point> intersections = new HashSet<>();
+        Set<Point> intersections = null;
 
+        // Iterate through geometries to find intersections
         for (Intersectable geometry : geometries) {
-            List<Point> geoIntersections = geometry.findIntersections(ray);
-            System.out.println(geoIntersections+":: "+geometry);
+            var geoIntersections = geometry.findIntersections(ray);
             if (geoIntersections != null) {
-                intersections.addAll(geoIntersections);
+                if (intersections == null) {
+                    intersections = new HashSet<>();  // Initialize the Set only when needed
+                }
+                intersections.addAll(geoIntersections);  // Add valid intersections
             }
         }
 
-        return intersections.isEmpty() ? null : new ArrayList<>(intersections);
+        // Return the intersections as a List, or null if no intersections found
+        return intersections == null || intersections.isEmpty() ? null : new ArrayList<>(intersections);
     }
 }

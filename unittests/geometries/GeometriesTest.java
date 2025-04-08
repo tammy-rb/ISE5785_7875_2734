@@ -51,7 +51,7 @@ class GeometriesTest {
         final var result12 = geometries.findIntersections(ray12);
         assertNull(result12, "Wrong number of intersection points");
         // TC13: Intersects only one geometry
-        Ray ray13 = new Ray(new Point(-2, -2, 1), new Vector(-1, -1, 7));
+        Ray ray13 = new Ray(new Point(-2, -2, -1), new Vector(-1, -1, 7));
         final var result13 = geometries.findIntersections(ray13);
         assertEquals(1, result13.size(), "Wrong number of intersection points");
         // TC14: Ray intersects all the geometries
