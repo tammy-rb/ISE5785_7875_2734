@@ -35,12 +35,11 @@ public class Triangle extends Polygon {
         Point p2 = vertices.get(2);
         if (p.equals(p0) || p.equals(p1) || p.equals(p2)) return null;
         Vector n1, n2, n3;
-        try{
+        try {
             n1 = p1.subtract(p0).crossProduct(p0.subtract(p));
             n2 = p2.subtract(p1).crossProduct(p1.subtract(p));
             n3 = p0.subtract(p2).crossProduct(p2.subtract(p));
-        }
-        catch(IllegalArgumentException e){ // normal is 0 - p is on a edge or edge contieues
+        } catch (IllegalArgumentException e) { // normal is 0 - p is on a edge or edge contieues
             return null;
         }
         // Check if all normals point in the same direction

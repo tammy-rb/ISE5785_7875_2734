@@ -54,7 +54,7 @@ class SphereTests {
         Ray ray01 = new Ray(new Point(0, 0.5, 0.5), new Vector(1, 0, 0));
         final var expected01 = List.of(
                 new Point(2 - Math.sqrt(2) / 2, 0.5, 0.5),
-                new Point(2 + Math.sqrt(2) / 2,0.5,0.5));
+                new Point(2 + Math.sqrt(2) / 2, 0.5, 0.5));
         final var result01 = sphere.findIntersections(ray01);
         assertNotNull(result01, "Ray intersects the sphere — result should not be null");
         assertEquals(2, result01.size(), "Wrong number of intersection points");
