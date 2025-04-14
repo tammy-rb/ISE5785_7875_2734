@@ -1,5 +1,8 @@
 package primitives;
 
+import static primitives.Util.isZero;
+
+
 /**
  * Represents a ray in 3D space, defined by a starting point (head) and a direction vector.
  */
@@ -33,6 +36,20 @@ public class Ray {
 
     public Point getHead() {
         return head;
+    }
+
+    /**
+     * Returns a point located at a distance `t` along the ray, starting from the head.
+     * The point is calculated as: {@code head + t * direction}.
+     *
+     * @param t The distance along the ray. A positive value moves the point in the direction
+     *          of the ray, while a negative value moves the point in the opposite direction.
+     * @return The point located at distance `t` along the ray from the head.
+     */
+    public Point getPoint(double t) {
+        if (isZero(t))
+            return head;
+        return head.add(direction.scale(t));
     }
 
     @Override

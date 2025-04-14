@@ -32,7 +32,7 @@ public class Tube extends RadialGeometry {
         double t = v.dotProduct(u);
         if (isZero(t)) //p-p0 orthogonal to ray
             return u.normalize();
-        Point o = axis.getHead().add(v.scale(t));
+        Point o = axis.getPoint(t);
         return p.subtract(o).normalize();
     }
 

@@ -30,7 +30,7 @@ public class Sphere extends RadialGeometry {
 
     /**
      * Finds intersection points between the sphere and a given ray.
-     *
+     * <p>
      * The method calculates the points where a ray intersects the sphere.
      * Points that lie exactly at the ray's origin are not counted as intersections.
      * also launch points are not counted as intersections
@@ -42,7 +42,7 @@ public class Sphere extends RadialGeometry {
     public List<Point> findIntersections(Ray ray) {
         // Special case: the ray starts at the center of the sphere
         if (center.equals(ray.getHead())) {
-            return List.of(ray.getHead().add(ray.getDirection().scale(radius)));
+            return List.of(ray.getPoint(radius));
         }
 
         Vector u = center.subtract(ray.getHead());
@@ -60,19 +60,16 @@ public class Sphere extends RadialGeometry {
         double t2 = tm + th;
 
         // Calculate potential intersection points (if they are in front of the ray)
-        Point p1 = t1 > 0 ? ray.getHead().add(ray.getDirection().scale(t1)) : null;
-        Point p2 = t2 > 0 ? ray.getHead().add(ray.getDirection().scale(t2)) : null;
+        Point p1 = t1 > 0 ? ray.getPoint(t1) : null;
+        Point p2 = t2 > 0 ? ray.getPoint(t2) : null;
 
         // Return the valid intersections (ignoring those behind the ray's origin or at its head)
-        if (p1 != null && p2 != null) {
+        if (p1 != null && p2 != null)
             return t1 < t2 ? List.of(p1, p2) : List.of(p2, p1);
-        }
-        if (p1 != null) {
+        if (p1 != null)
             return List.of(p1);
-        }
-        if (p2 != null) {
+        if (p2 != null)
             return List.of(p2);
-        }
 
         return null;
     }

@@ -30,7 +30,7 @@ public class Cylinder extends Tube {
     public Vector getNormal(Point p) {
         Point p0 = axis.getHead(); // Base center
         Vector v = axis.getDirection(); // Axis direction
-        Point p1 = p0.add(v.scale(height)); // top center base
+        Point p1 = axis.getPoint(height);
         // points are the centers of the bases
         if (p.equals(p0))
             return v.scale(-1);
@@ -43,9 +43,9 @@ public class Cylinder extends Tube {
 
         // point is on a base or on its edge
         if (isZero(t)) return v.scale(-1); // Bottom base center, normal is -v
-        if (isZero(t-height)) return v; // Top base center, normal is v
+        if (isZero(t - height)) return v; // Top base center, normal is v
 
-        Point o = p0.add(v.scale(t)); // Projection onto axis
+        Point o = axis.getPoint(t); // Projection onto axis
         return p.subtract(o).normalize(); // Normal to surface
     }
 

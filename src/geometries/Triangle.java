@@ -39,10 +39,10 @@ public class Triangle extends Polygon {
             n1 = p1.subtract(p0).crossProduct(p0.subtract(p));
             n2 = p2.subtract(p1).crossProduct(p1.subtract(p));
             n3 = p0.subtract(p2).crossProduct(p2.subtract(p));
-        } catch (IllegalArgumentException e) { // normal is 0 - p is on a edge or edge contieues
+        } catch (IllegalArgumentException e) { // normal is 0 - p is on an edge or edge continues
             return null;
         }
-        // Check if all normals point in the same direction
+        // Checks if all the normals at a point are in the same direction
         double d1 = n1.dotProduct(n2);
         double d2 = n1.dotProduct(n3);
         if (d1 > 0 && d2 > 0) {

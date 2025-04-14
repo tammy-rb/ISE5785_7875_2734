@@ -3,11 +3,7 @@ package geometries;
 import primitives.Point;
 import primitives.Ray;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a collection of intersectable geometries.
@@ -45,9 +41,7 @@ public class Geometries implements Intersectable {
      * @param geometries geometries to add
      */
     public void add(Intersectable... geometries) {
-        for (Intersectable geometry : geometries) {
-            this.geometries.add(geometry);
-        }
+        Collections.addAll(this.geometries, geometries);
     }
 
     /**
@@ -64,9 +58,8 @@ public class Geometries implements Intersectable {
         for (Intersectable geometry : geometries) {
             var geoIntersections = geometry.findIntersections(ray);
             if (geoIntersections != null) {
-                if (intersections == null) {
+                if (intersections == null)
                     intersections = new HashSet<>();  // Initialize the Set only when needed
-                }
                 intersections.addAll(geoIntersections);  // Add valid intersections
             }
         }

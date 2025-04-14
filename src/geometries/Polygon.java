@@ -98,18 +98,17 @@ public class Polygon extends Geometry {
         if (intersections == null) return null;
         Point p = intersections.getFirst();
         // Check if the intersection point lies on any of the polygon's vertices
-        for (Point vertex : vertices) {
-            if (p.equals(vertex)) {
+        for (Point vertex : vertices)
+            if (p.equals(vertex))
                 return null;
-            }
-        }
+
         Vector[] normals = new Vector[vertices.size()];
         for (int i = 0; i < vertices.size(); i++) {
             Vector v1 = null;
-            if (i == vertices.size() - 1) {
+            if (i == vertices.size() - 1)
                 v1 = vertices.getFirst().subtract(vertices.get(i));
-            }
-            else { v1 = vertices.get(i + 1).subtract(vertices.get(i)); }
+            else
+                v1 = vertices.get(i + 1).subtract(vertices.get(i));
             Vector v2 = vertices.get(i).subtract(p);
             try {
                 normals[i] = v1.crossProduct(v2);
@@ -119,11 +118,10 @@ public class Polygon extends Geometry {
         }
         // check the point is inside the polygon
         double initialDot = normals[0].dotProduct(normals[1]);
-        for (int i = 1; i < normals.length - 1; i++) {
-            if (initialDot * normals[i].dotProduct(normals[i + 1]) <= 0) {
+        for (int i = 1; i < normals.length - 1; i++)
+            if (initialDot * normals[i].dotProduct(normals[i + 1]) <= 0)
                 return null; // not all in the same direction
-            }
-        }
+
         return intersections;
     }
 }
