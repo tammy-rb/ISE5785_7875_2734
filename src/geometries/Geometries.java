@@ -14,10 +14,10 @@ public class Geometries implements Intersectable {
     private final List<Intersectable> geometries = new LinkedList<>();
 
     /**
-     * Returns the list of geometries.
+     * Returns the length of the geometries' list.
      */
-    public List<Intersectable> getGeometries() {
-        return geometries;
+    public int getGeometriesSize() {
+        return geometries.size();
     }
 
     /**
@@ -51,20 +51,18 @@ public class Geometries implements Intersectable {
      * @param ray The ray to test for intersections
      * @return A list of unique intersection points, or null if none found
      */
+    @Override
     public List<Point> findIntersections(Ray ray) {
-        Set<Point> intersections = null;
+        List<Point> intersections = new ArrayList<>();
 
-        // Iterate through geometries to find intersections
         for (Intersectable geometry : geometries) {
-            var geoIntersections = geometry.findIntersections(ray);
+            List<Point> geoIntersections = geometry.findIntersections(ray);
+            System.out.println(geoIntersections + " :: " + geometry);
             if (geoIntersections != null) {
-                if (intersections == null)
-                    intersections = new HashSet<>();  // Initialize the Set only when needed
-                intersections.addAll(geoIntersections);  // Add valid intersections
+                intersections.addAll(geoIntersections); // Keep all, even duplicates
             }
         }
 
-        // Return the intersections as a List, or null if no intersections found
-        return intersections == null || intersections.isEmpty() ? null : new ArrayList<>(intersections);
+        return intersections.isEmpty() ? null : intersections;
     }
 }
