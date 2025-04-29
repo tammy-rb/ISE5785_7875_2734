@@ -1,14 +1,16 @@
 package renderer;
 
 import primitives.*;
+
 import java.util.MissingResourceException;
+
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 /**
  * Camera class represents a virtual camera in a 3D scene, using the Builder design pattern.
  * It defines the camera's location and orientation and provides methods to configure the camera.
- *
+ * <p>
  * Implements Cloneable to allow creating copies of the camera.
  */
 public class Camera implements Cloneable {
@@ -25,10 +27,12 @@ public class Camera implements Cloneable {
      * Private default constructor for Camera.
      * Only Builder can create instances.
      */
-    private Camera() {}
+    private Camera() {
+    }
 
     /**
      * Returns a new instance of the Builder class for constructing a Camera.
+     *
      * @return Builder instance
      */
     public static Builder getBuilder() {
@@ -41,12 +45,23 @@ public class Camera implements Cloneable {
      *
      * @param nX Number of pixels in the X axis (columns)
      * @param nY Number of pixels in the Y axis (rows)
-     * @param j Column index of the pixel
-     * @param i Row index of the pixel
+     * @param j  Column index of the pixel
+     * @param i  Row index of the pixel
      * @return Ray through the pixel (currently returns null)
      */
     public Ray constructRay(int nX, int nY, int j, int i) {
-        return null;
+        Point pCenter = p0.add(vTo.scale(viewPlaneDistance));
+        double rY = viewPlaneHeight / nY;
+        double rX = viewPlaneWidth / nX;
+        double yi = -(i - (double) (nY - 1) / 2) * rY;
+        double xj = (j - (double) (nX - 1) / 2) * rX;
+        Point p = pCenter;
+        if (!isZero(xj))
+            p = p.add(vRight.scale(xj));
+        if (!isZero(yi))
+            p = p.add(vUp.scale(yi));
+        Vector v = p.subtract(p0);
+        return new Ray(p0, v);
     }
 
     @Override
@@ -64,16 +79,21 @@ public class Camera implements Cloneable {
     public static class Builder {
         private final Camera camera = new Camera();
 
-        /** Constant for error message when data is missing */
+        /**
+         * Constant for error message when data is missing
+         */
         private static final String ERROR_MESSAGE = "Missing rendering data";
 
-        /** Constant for the Camera class name */
+        /**
+         * Constant for the Camera class name
+         */
         private static final String CLASS_NAME = "Camera";
 
         /**
          * Default constructor for Builder.
          */
-        public Builder() {}
+        public Builder() {
+        }
 
         /**
          * Sets the location of the camera.
@@ -109,7 +129,7 @@ public class Camera implements Cloneable {
          * Sets the camera direction using a target point and an up vector.
          *
          * @param pTarget Target point the camera should look at
-         * @param vUp Up vector
+         * @param vUp     Up vector
          * @return Builder instance
          */
         public Builder setDirection(Point pTarget, Vector vUp) {
@@ -144,7 +164,7 @@ public class Camera implements Cloneable {
         /**
          * Sets the size of the View Plane.
          *
-         * @param width Width of the view plane
+         * @param width  Width of the view plane
          * @param height Height of the view plane
          * @return Builder instance
          */

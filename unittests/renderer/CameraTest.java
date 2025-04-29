@@ -1,11 +1,9 @@
 package renderer;
 
+import primitives.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import primitives.*;
-import renderer.Camera;
 
 /**
  * Testing Camera Class

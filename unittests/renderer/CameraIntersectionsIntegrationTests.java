@@ -4,7 +4,7 @@ import geometries.*;
 import primitives.*;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration tests for Camera ray construction and intersection finding with geometric bodies.
