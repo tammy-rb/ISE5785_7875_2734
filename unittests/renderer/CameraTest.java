@@ -18,7 +18,7 @@ class CameraTest {
      */
     private final Camera.Builder cameraBuilder = Camera.getBuilder()
             .setLocation(Point.ZERO)
-            .setVpDistance(10);
+            .setViewPlaneDistance(10);
     /**
      * Assert failure message for a bad ray
      */

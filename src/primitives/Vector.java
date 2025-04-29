@@ -7,6 +7,15 @@ package primitives;
  */
 public class Vector extends Point {
 
+    /** X-axis unit vector (1, 0, 0) */
+    public static final Vector AXIS_X = new Vector(1, 0, 0);
+
+    /** Y-axis unit vector (0, 1, 0) */
+    public static final Vector AXIS_Y = new Vector(0, 1, 0);
+
+    /** Z-axis unit vector (0, 0, 1) */
+    public static final Vector AXIS_Z = new Vector(0, 0, 1);
+
     /**
      * Constructs a vector using individual x, y, and z coordinates.
      * Throws an exception if the vector is a zero vector.
