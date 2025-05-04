@@ -57,7 +57,6 @@ public class Geometries implements Intersectable {
 
         for (Intersectable geometry : geometries) {
             List<Point> geoIntersections = geometry.findIntersections(ray);
-            System.out.println(geoIntersections + " :: " + geometry);
             if (geoIntersections != null) {
                 intersections.addAll(geoIntersections); // Keep all, even duplicates
             }
