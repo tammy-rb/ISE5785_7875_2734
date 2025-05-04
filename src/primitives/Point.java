@@ -89,4 +89,8 @@ public class Point {
     public String toString() {
         return xyz.toString();
     }
+
+    public Double3 get_xyz() {
+        return xyz;
+    }
 }

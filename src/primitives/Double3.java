@@ -118,4 +118,5 @@ public record Double3(double d1, double d2, double d3) {
     public boolean lowerThan(Double3 other) {
         return d1 < other.d1 && d2 < other.d2 && d3 < other.d3;
     }
+
 }
