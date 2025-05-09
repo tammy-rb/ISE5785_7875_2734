@@ -4,7 +4,6 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static primitives.Util.isZero;
@@ -14,8 +13,9 @@ import static primitives.Util.isZero;
  * It inherits from Polygon since a triangle is a polygon with 3 vertices.
  */
 public class Triangle extends Polygon {
+
     /**
-     * Constructor for Triangle using three points.
+     * Constructs a Triangle with three given vertices.
      *
      * @param p1 First vertex of the triangle
      * @param p2 Second vertex of the triangle
@@ -29,25 +29,27 @@ public class Triangle extends Polygon {
     public List<Point> findIntersections(Ray ray) {
         var intersections = plane.findIntersections(ray);
         if (intersections == null) return null;
+
         Point p = intersections.getFirst();
         Point p0 = vertices.get(0);
         Point p1 = vertices.get(1);
         Point p2 = vertices.get(2);
-        if (p.equals(p0) || p.equals(p1) || p.equals(p2)) return null;
+        if (p.equals(p0) || p.equals(p1) || p.equals(p2))
+            return null;
+
         Vector n1, n2, n3;
         try {
             n1 = p1.subtract(p0).crossProduct(p0.subtract(p));
             n2 = p2.subtract(p1).crossProduct(p1.subtract(p));
             n3 = p0.subtract(p2).crossProduct(p2.subtract(p));
-        } catch (IllegalArgumentException e) { // normal is 0 - p is on an edge or edge continues
+        } catch (IllegalArgumentException e) {
             return null;
         }
-        // Checks if all the normals at a point are in the same direction
+
         double d1 = n1.dotProduct(n2);
         double d2 = n1.dotProduct(n3);
-        if (d1 > 0 && d2 > 0) {
+        if (d1 > 0 && d2 > 0)
             return intersections;
-        }
         return null;
     }
 }
