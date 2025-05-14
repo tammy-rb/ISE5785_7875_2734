@@ -1,7 +1,9 @@
 package renderer;
 
 import primitives.*;
+import primitives.Point;
 
+import java.awt.*;
 import java.util.MissingResourceException;
 
 import static primitives.Util.*;
@@ -24,6 +26,7 @@ public class Camera implements Cloneable {
     private double viewPlaneWidth = 0.0;
     private double viewPlaneHeight = 0.0;
     private Point viewPlaneCenter;
+    private ImageWriter imageWriter;
 
     /**
      * Private constructor. Use the {@link Builder} to create instances.
@@ -193,6 +196,10 @@ public class Camera implements Cloneable {
          * @return Builder instance
          */
         public Builder setResolution(int nX, int nY) {
+            return this;
+        }
+
+        public Builder setImageWriter(ImageWriter imageWriter){
             return this;
         }
 
