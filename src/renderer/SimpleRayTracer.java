@@ -1,8 +1,11 @@
 package renderer;
 
 import primitives.Color;
+import primitives.Point;
 import primitives.Ray;
 import scene.Scene;
+
+import java.util.List;
 
 public class SimpleRayTracer extends RayTracerBase {
     public SimpleRayTracer(Scene scene) {
@@ -11,6 +14,16 @@ public class SimpleRayTracer extends RayTracerBase {
 
     @Override
     public Color traceRay(Ray ray) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<Point> intersections = scene.geometries.findIntersections(ray);
+        if (intersections == null) {
+            return scene.background;
+        }
+        else {
+            return calcColor(ray.findClosestPoint(intersections));
+        }
+    }
+
+    private Color calcColor(Point point){
+        return scene.ambientLight.getIntensity();
     }
 }

@@ -33,7 +33,7 @@ public class RenderTests {
          .setAmbientLight(new AmbientLight(new Color(255, 191, 191)));
       scene.geometries //
          .add(// center
-              new Sphere(new Point(0, 0, -100), 50d),
+              new Sphere(50d, new Point(0, 0, -100)),
               // up left
               new Triangle(new Point(-100, 0, -100), new Point(0, 100, -100), new Point(-100, 100, -100)),
               // down left
@@ -90,7 +90,7 @@ public class RenderTests {
       // ...
       // NB: unit tests is not the correct place to put XML parsing code
 
-      camera //
+      camera
          .setRayTracer(scene, RayTracerType.SIMPLE) //
          .setResolution(1000, 1000) //
          .build() //
@@ -98,23 +98,23 @@ public class RenderTests {
          .printGrid(100, new Color(YELLOW)) //
          .writeToImage("xml render test");
    }
-
-   /** Test for JSON based scene - for bonus */
-   @Test
-   public void basicRenderJson() {
-      Scene scene = new Scene("Using Json");
-      // enter XML file name and parse from JSON file into scene object instead of the
-      // new Scene above,
-      // Use the code you added in appropriate packages
-      // ...
-      // NB: unit tests is not the correct place to put XML parsing code
-
-      camera //
-         .setRayTracer(scene, RayTracerType.SIMPLE) //
-         .setResolution(1000, 1000) //
-         .build() //
-         .renderImage() //
-         .printGrid(100, new Color(YELLOW)) //
-         .writeToImage("xml render test");
-   }
+//
+//   /** Test for JSON based scene - for bonus */
+//   @Test
+//   public void basicRenderJson() {
+//      Scene scene = new Scene("Using Json");
+//      // enter XML file name and parse from JSON file into scene object instead of the
+//      // new Scene above,
+//      // Use the code you added in appropriate packages
+//      // ...
+//      // NB: unit tests is not the correct place to put XML parsing code
+//
+//      camera //
+//         .setRayTracer(scene, RayTracerType.SIMPLE) //
+//         .setResolution(1000, 1000) //
+//         .build() //
+//         .renderImage() //
+//         .printGrid(100, new Color(YELLOW)) //
+//         .writeToImage("xml render test");
+//   }
 }
