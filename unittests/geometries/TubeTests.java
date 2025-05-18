@@ -85,7 +85,8 @@ class TubeTests {
         assertEquals(List.of(
                         new Point(2 - Math.sqrt(2) / 2, Math.sqrt(2) / 2, 1),
                         new Point(2 + Math.sqrt(2) / 2, -Math.sqrt(2) / 2, 1)),
-                result01, "TC01: intersections points are not correct");
+                result01,
+                "ERROR: intersections points are not correct");
 
         // TC02: Ray is completely outside and does not intersect (2 rays tested)
         Ray ray02_1 = new Ray(new Point(0, -1, 0), new Vector(-1, -1, -1));
@@ -198,6 +199,7 @@ class TubeTests {
                 result18_2,
                 "ERROR: intersection points are not correct");
 
+        // TC19: Ray orthogonal to axis, starts outside, intersects p0 of the tube
         Ray ray19 = new Ray(new Point(3, 4, 1), new Vector(1, -1, 0));
         final var result19 = tube2.findIntersections(ray19);
         assertEquals(2, result19.size(),

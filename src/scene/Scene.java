@@ -10,7 +10,7 @@ public class Scene {
     public AmbientLight ambientLight = AmbientLight.NONE;
     public Geometries geometries = new Geometries();
 
-    public Scene(String sceneName){
+    public Scene(String sceneName) {
         name = sceneName;
     }
 

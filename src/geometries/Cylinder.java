@@ -113,6 +113,17 @@ public class Cylinder extends Tube {
         if (topIntersection != null)
             result.add(topIntersection);
 
-        return result.isEmpty() ? null : result;
+        if (result.isEmpty()) return null;
+
+        // Ensure correct order: closest point to ray origin first
+        if (result.size() == 2) {
+            Point p0 = ray.getHead();
+            if (result.get(0).distance(p0) > result.get(1).distance(p0)) {
+                Point temp = result.get(0);
+                result.set(0, result.get(1));
+                result.set(1, temp);
+            }
+        }
+        return result;
     }
 }

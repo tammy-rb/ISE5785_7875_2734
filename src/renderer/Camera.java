@@ -1,8 +1,11 @@
 package renderer;
 
 import primitives.*;
+import primitives.Color;
 import primitives.Point;
+import scene.Scene;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.util.MissingResourceException;
 
@@ -27,6 +30,9 @@ public class Camera implements Cloneable {
     private double viewPlaneHeight = 0.0;
     private Point viewPlaneCenter;
     private ImageWriter imageWriter;
+    private RayTracerBase rayTracer;
+    private int nX = 1;
+    private int nY = 1;
 
     /**
      * Private constructor. Use the {@link Builder} to create instances.
@@ -64,6 +70,19 @@ public class Camera implements Cloneable {
             p = p.add(vUp.scale(yi));
         Vector v = p.subtract(p0);
         return new Ray(p0, v);
+    }
+
+    public Camera renderImage() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Camera PrintGrid(int interval, Color color) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Camera writeToImage(String imageName) {
+        this.imageWriter.writeToImage(imageName);
+        return this;
     }
 
     /**
@@ -196,10 +215,16 @@ public class Camera implements Cloneable {
          * @return Builder instance
          */
         public Builder setResolution(int nX, int nY) {
+            camera.nX = nX;
+            camera.nY = nY;
             return this;
         }
 
-        public Builder setImageWriter(ImageWriter imageWriter){
+        public Builder setRayTracer(Scene scene, RayTracerType rayTracerType) {
+            if (rayTracerType == rayTracerType.SIMPLE)
+                camera.rayTracer = new SimpleRayTracer(scene);
+            else
+                camera.rayTracer = null;
             return this;
         }
 
@@ -223,11 +248,16 @@ public class Camera implements Cloneable {
                 throw new IllegalArgumentException("ViewPlane height must be positive");
             if (alignZero(camera.viewPlaneDistance) <= 0)
                 throw new IllegalArgumentException("ViewPlane distance must be positive");
+            if (alignZero(camera.nX) <= 0 || alignZero(camera.nY) <= 0)
+                throw new IllegalArgumentException("NX and NY must be positive");
 
             if (camera.vRight == null)
                 camera.vRight = camera.vTo.crossProduct(camera.vUp).normalize();
+            if (camera.rayTracer == null)
+                camera.rayTracer = new SimpleRayTracer(null);
 
             camera.viewPlaneCenter = camera.p0.add(camera.vTo.scale(camera.viewPlaneDistance));
+            camera.imageWriter = new ImageWriter(camera.nX, camera.nY);
 
             return (Camera) camera.clone();
         }
