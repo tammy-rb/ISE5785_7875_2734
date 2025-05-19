@@ -1,0 +1,13 @@
+<scene background-color="75 127 190">
+    <ambient-light color="255 191 191"/>
+    <geometries>
+        <sphere center="0 0 -100" radius="50"/>
+        <triangle p0="-100 0 -100" p1="0 100 -100" p2="-100 100 -100"/>
+        <triangle p0="-100 0 -100" p1="0 -100 -100" p2="-100 -100 -100"/>
+        <triangle p0="100 0 -100" p1="0 -100 -100" p2="100 -100 -100"/>
+        <!-- New polygon added next to the sphere -->
+        <polygon p0="60 10 -100" p1="70 10 -100" p2="75 15 -100" p3="70 20 -100" p4="60 20 -100"/>
+        <!-- New tube added next to the polygon -->
+        <tube p0="80 10 -100" direction="0 0 1" radius="5"/>
+    </geometries>
+</scene>

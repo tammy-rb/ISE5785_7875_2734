@@ -8,6 +8,8 @@ import geometries.*;
 import lighting.AmbientLight;
 import primitives.*;
 import scene.Scene;
+import scene.SceneFactory;
+import scene.XMLSceneFactory;
 
 /**
  * Test rendering a basic image
@@ -82,8 +84,10 @@ public class RenderTests {
 
    /** Test for XML based scene - for bonus */
    @Test
-   public void basicRenderXml() {
-      Scene scene = new Scene("Using XML");
+   public void basicRenderXml() throws Exception {
+      SceneFactory<String> sceneFactory = new XMLSceneFactory();
+      Scene scene = sceneFactory.createScene("resources/scenes/xml/renderTestTwoColors.xml");
+
       // enter XML file name and parse from XML file into scene object instead of the
       // new Scene above,
       // Use the code you added in appropriate packages
