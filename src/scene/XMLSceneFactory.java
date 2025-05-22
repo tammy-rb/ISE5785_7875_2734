@@ -11,6 +11,9 @@ import primitives.Color;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A factory class for creating {@link Scene} instances from XML files.
+ */
 public class XMLSceneFactory implements SceneFactory<String> {
 
     @Override
@@ -19,19 +22,16 @@ public class XMLSceneFactory implements SceneFactory<String> {
         Map<String, Object> config = sceneParser.parse(xmlFilePath);
         Scene scene = new Scene("From XML");
 
-        // Background Color
         String bgColor = (String) config.get("background-color");
         if (bgColor != null) {
             scene.setBackground(parseColor(bgColor));
         }
 
-        // Ambient Light
         String ambientColor = (String) config.get("ambient-light");
         if (ambientColor != null) {
             scene.setAmbientLight(new AmbientLight(parseColor(ambientColor)));
         }
 
-        // Geometries
         Geometries geometries = new Geometries();
         List<Map<String, String>> geometryList = (List<Map<String, String>>) config.get("geometries");
 
@@ -45,6 +45,12 @@ public class XMLSceneFactory implements SceneFactory<String> {
         return scene;
     }
 
+    /**
+     * Parses a color string in the format "R G B" into a {@link Color} object.
+     *
+     * @param s A string representing the RGB color.
+     * @return A {@link Color} instance with the specified RGB values.
+     */
     private static Color parseColor(String s) {
         String[] rgb = s.trim().split("\\s+");
         return new Color(
