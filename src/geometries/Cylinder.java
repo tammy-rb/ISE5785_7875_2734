@@ -6,6 +6,7 @@ import primitives.Vector;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static primitives.Util.*;
 
@@ -76,9 +77,24 @@ public class Cylinder extends Tube {
         return alignZero(intersection.distance(center) - radius) <= 0 ? intersection : null;
     }
 
+    /**
+     * Helper method to check if a list contains a point within a small tolerance.
+     */
+    private boolean containsPoint(List<Point> points, Point p) {
+        final double EPS = 1e-10;
+        for (Point point : points) {
+            if (point.distance(p) < EPS) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
-    public List<Point> findIntersections(Ray ray) {
-        List<Point> result = new LinkedList<>();
+    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
+        List<Point> intersections = new LinkedList<>();
+
+        // Intersections with the infinite tube surface
         List<Point> tubeIntersections = super.findIntersections(ray);
 
         if (tubeIntersections != null) {
@@ -86,44 +102,43 @@ public class Cylinder extends Tube {
             Point baseCenter = axis.getHead();
 
             for (Point pt : tubeIntersections) {
-                // Vector from base to intersection point
-                Vector fromBase = pt.subtract(baseCenter);
+                Vector baseToPoint = pt.subtract(baseCenter);
+                double projection = alignZero(axisDir.dotProduct(baseToPoint));
 
-                // Project onto axis to find height position of the point
-                double projection = alignZero(axisDir.dotProduct(fromBase));
-
-                // Keep points that lie within the finite height of the cylinder
-                if (!isZero(projection) && !isZero(projection - height) && projection > 0 && projection < height)
-                    result.add(pt);
+                // Keep only points within the cylinder's finite height (excluding caps)
+                if (projection >= 0 && projection <= height)
+                    intersections.add(pt);
             }
         }
 
+        // Intersections with the bottom cap
         Point bottomCenter = axis.getHead();
-        Point topCenter = axis.getPoint(height);
-        // Axis direction (used as normal for both caps)
         Vector axisDir = axis.getDirection();
+        Point bottomIntersection = intersectBase(ray, bottomCenter, axisDir.scale(-1));
 
-        // Bottom base intersection
-        Point bottomIntersection = intersectBase(ray, bottomCenter, axisDir);
-        if (bottomIntersection != null)
-            result.add(bottomIntersection);
+        if (bottomIntersection != null && !containsPoint(intersections, bottomIntersection))
+            intersections.add(bottomIntersection);
 
-        // Top base intersection
+        // Intersections with the top cap
+        Point topCenter = axis.getPoint(height);
         Point topIntersection = intersectBase(ray, topCenter, axisDir);
-        if (topIntersection != null)
-            result.add(topIntersection);
 
-        if (result.isEmpty()) return null;
+        if (topIntersection != null && !containsPoint(intersections, topIntersection))
+            intersections.add(topIntersection);
+
+        // Return null if no intersections found
+        if (intersections.isEmpty())
+            return null;
 
         // Ensure correct order: closest point to ray origin first
-        if (result.size() == 2) {
+        if (intersections.size() == 2) {
             Point p0 = ray.getHead();
-            if (result.get(0).distance(p0) > result.get(1).distance(p0)) {
-                Point temp = result.get(0);
-                result.set(0, result.get(1));
-                result.set(1, temp);
+            if (intersections.get(0).distance(p0) > intersections.get(1).distance(p0)) {
+                Point temp = intersections.get(0);
+                intersections.set(0, intersections.get(1));
+                intersections.set(1, temp);
             }
         }
-        return result;
+        return intersections.stream().map(i -> new Intersection(this, i)).collect(Collectors.toList());
     }
 }

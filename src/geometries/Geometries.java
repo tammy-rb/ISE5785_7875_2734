@@ -9,7 +9,7 @@ import java.util.*;
  * Represents a collection of intersectable geometries.
  * Implements Intersectable to allow ray intersection queries on all contained geometries.
  */
-public class Geometries implements Intersectable {
+public class Geometries extends Intersectable {
 
     private final List<Intersectable> geometries = new LinkedList<>();
 
@@ -52,16 +52,15 @@ public class Geometries implements Intersectable {
      * @return A list of unique intersection points, or null if none found
      */
     @Override
-    public List<Point> findIntersections(Ray ray) {
-        List<Point> intersections = new ArrayList<>();
+    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
+        List<Intersection> intersections = new ArrayList<>();
 
         for (Intersectable geometry : geometries) {
-            List<Point> geoIntersections = geometry.findIntersections(ray);
+            List<Intersection> geoIntersections = geometry.calculateIntersections(ray);
             if (geoIntersections != null) {
                 intersections.addAll(geoIntersections); // Keep all, even duplicates
             }
         }
-
         return intersections.isEmpty() ? null : intersections;
     }
 }

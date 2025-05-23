@@ -2,6 +2,7 @@ package geometries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static primitives.Util.*;
 
@@ -93,9 +94,10 @@ public class Polygon extends Geometry {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
         var intersections = this.plane.findIntersections(ray);
-        if (intersections == null) return null;
+        if (intersections == null)
+            return null;
         Point p = intersections.getFirst();
         // Check if the intersection point lies on any of the polygon's vertices
         for (Point vertex : vertices)
@@ -122,6 +124,6 @@ public class Polygon extends Geometry {
             if (initialDot * normals[i].dotProduct(normals[i + 1]) <= 0)
                 return null; // not all in the same direction
 
-        return intersections;
+        return intersections.stream().map(i -> new Intersection(this, i)).collect(Collectors.toList());
     }
 }

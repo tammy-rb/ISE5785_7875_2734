@@ -1,12 +1,25 @@
 package geometries;
 
+import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
 /**
  * Abstract class representing a geometric object.
  */
-public abstract class Geometry implements Intersectable{
+public abstract class Geometry extends Intersectable {
+
+
+    protected Color emission = Color.BLACK;
+
+    public Color getEmission() {
+        return emission;
+    }
+
+    public Geometry setEmission(Color emission) {
+        this.emission = emission;
+        return this;
+    }
 
     /**
      * Gets the normal vector at a specific point on the geometry.
