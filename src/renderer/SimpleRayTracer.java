@@ -41,6 +41,7 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the ambient light {@link Color} at the point
      */
     private Color calcColor(Intersection intersection) {
-        return scene.ambientLight.getIntensity().add(intersection.geometry.getEmission());
+        return scene.ambientLight.getIntensity().scale(intersection.geometry.getMaterial().kA)
+                .add(intersection.geometry.getEmission());
     }
 }
