@@ -1,12 +1,14 @@
 package renderer;
 
-import primitives.Color;
-import primitives.Point;
-import primitives.Ray;
+import lighting.Light;
+import lighting.LightSource;
+import primitives.*;
 import scene.Scene;
 import geometries.Intersectable.Intersection;
 
 import java.util.List;
+
+import static primitives.Util.alignZero;
 
 /**
  * A simple implementation of the {@link RayTracerBase} class.
@@ -30,7 +32,7 @@ public class SimpleRayTracer extends RayTracerBase {
         List<Intersection> intersections = scene.geometries.calculateIntersections(ray);
         if (intersections == null)
             return scene.background;
-        return calcColor(ray.findClosestIntersection(intersections));
+        return calcColor(ray.findClosestIntersection(intersections),ray);
     }
 
     /**
@@ -40,8 +42,49 @@ public class SimpleRayTracer extends RayTracerBase {
      * @param Intersection the point to calculate the color for
      * @return the ambient light {@link Color} at the point
      */
-    private Color calcColor(Intersection intersection) {
-        return scene.ambientLight.getIntensity().scale(intersection.geometry.getMaterial().kA)
-                .add(intersection.geometry.getEmission());
+    private Color calcColor(Intersection intersection, Ray ray) {
+        if (!preprocessIntersection(intersection, ray.getDirection())){
+            return Color.BLACK;
+        }
+        return scene.ambientLight.getIntensity().scale(intersection.material.kA)
+                .add(calcColorLocalEffects(intersection));
+    }
+
+    public boolean preprocessIntersection(Intersection intersection, Vector v) {
+        intersection.v = v.normalize();
+        intersection.normal = intersection.geometry.getNormal(intersection.point);
+        intersection.vNormal = alignZero(v.dotProduct(intersection.normal));
+        return intersection.vNormal != 0;
+    }
+
+    public boolean setLightSource(Intersection intersection, LightSource lightSource) {
+        intersection.l = lightSource.getL(intersection.point).normalize();
+        intersection.light = lightSource;
+        intersection.lNormal = alignZero(intersection.l.dotProduct(intersection.normal));
+        return intersection.lNormal * intersection.vNormal > 0;
+    }
+
+    private Color calcColorLocalEffects(Intersection intersection) {
+        Color color = intersection.geometry.getEmission();
+        for (LightSource lightSource : scene.lights) {
+            if(!setLightSource(intersection, lightSource)){
+                continue;
+            }
+            color = color.add(
+                    lightSource.getIntensity(intersection.point).scale(
+                            calcDiffusive(intersection).add(calcSpecular(intersection))
+                    )
+            );
+        }
+        return color;
+    }
+
+    private Double3 calcSpecular(Intersection intersection){
+        Vector r = intersection.l.subtract(intersection.normal.scale(2 * intersection.lNormal));
+        return intersection.material.kS.scale(Math.pow(Math.max(0,alignZero(intersection.v.scale(-1).dotProduct(r))), intersection.material.nSH));
+    }
+
+    private Double3 calcDiffusive(Intersection intersection) {
+        return intersection.material.kD.scale(Math.abs(intersection.lNormal));
     }
 }
