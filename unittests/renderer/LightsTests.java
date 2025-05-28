@@ -107,6 +107,36 @@ class LightsTests {
          .writeToImage("lightSphereDirectional");
    }
 
+   @Test
+   void sphereMultipleLights(){
+      scene1.geometries.add(sphere);
+      scene1.lights.add(new DirectionalLight(
+              new Color(800, 0, 0),                      // Strong Red
+              new Vector(-1, -1, -1)                    // From top-left-front
+      ));
+
+      // --- Point Light (GREEN) ---
+      // Characteristics: Intensity falls off with distance. Emits light in all directions from a single point.
+      // Effect: Creates a bright spot near the light source, fading out. Good for light bulbs.
+      scene1.lights.add(new PointLight(
+              new Color(0, 800, 0),                      // Strong Green
+              new Point(100, 0, 100)                      // To the right and slightly in front
+      ).setKL(0.001).setKQ(0.0001)); // Adjust KL and KQ for more noticeable falloff or spread
+
+      // --- Spot Light (BLUE) ---
+      // Characteristics: Emits light in a cone shape, with intensity falling off from the center of the cone.
+      // Effect: A focused beam of light. Good for flashlights, stage lights.
+      scene1.lights.add(new SpotLight(new Color(0,255,0), new Point(-60,-50,30), new Vector(1,1,-0.8)) //
+              .setKL(0.001).setKQ(0.0001)); // Narrow beam to emphasize the spotlight effect
+
+
+      camera1 //
+              .setResolution(500, 500) //
+              .build() //
+              .renderImage() //
+              .writeToImage("sphereMultipleLights");
+   }
+
    /** Produce a picture of a sphere lighted by a point light */
    @Test
    void spherePoint() {
@@ -171,6 +201,20 @@ class LightsTests {
          .build() //
          .renderImage() //
          .writeToImage("lightTrianglesSpot");
+   }
+
+   @Test
+   void multipleLightTriangle(){
+      scene2.geometries.add(triangle1, triangle2);
+      scene2.lights.add(new DirectionalLight(new Color(200,100,100), new Vector(-10,-2,-2)));
+      scene2.lights.add(new PointLight(new Color(600,0,0), new Point(50, 50, -100)) //
+              .setKL(0.001).setKQ(0.0002));
+      scene2.lights.add(new SpotLight(new Color(0,255,0), new Point(-20, -10, -100), trianglesLightDirection) //
+              .setKL(0.002).setKQ(0.0002));
+      camera2.setResolution(500, 500) //
+              .build() //
+              .renderImage() //
+              .writeToImage("MultipleLightsTriangles");
    }
 
 //   /** Produce a picture of a sphere lighted by a narrow spotlight */
