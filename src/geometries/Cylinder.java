@@ -95,7 +95,10 @@ public class Cylinder extends Tube {
         List<Point> intersections = new LinkedList<>();
 
         // Intersections with the infinite tube surface
-        List<Point> tubeIntersections = super.findIntersections(ray);
+        List<Intersection> tube_intersections = super.calculateIntersectionHelper(ray);
+        List<Point> tubeIntersections = null;
+        if (tube_intersections != null)
+            tubeIntersections = tube_intersections.stream().map(intersection -> intersection.point).toList();
 
         if (tubeIntersections != null) {
             Vector axisDir = axis.getDirection();
