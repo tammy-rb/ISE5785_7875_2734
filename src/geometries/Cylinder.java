@@ -6,7 +6,6 @@ import primitives.Vector;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static primitives.Util.*;
 
@@ -91,7 +90,7 @@ public class Cylinder extends Tube {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
+    public List<Point> findIntersections(Ray ray) {
         List<Point> intersections = new LinkedList<>();
 
         // Intersections with the infinite tube surface
@@ -117,7 +116,7 @@ public class Cylinder extends Tube {
         // Intersections with the bottom cap
         Point bottomCenter = axis.getHead();
         Vector axisDir = axis.getDirection();
-        Point bottomIntersection = intersectBase(ray, bottomCenter, axisDir.scale(-1));
+        Point bottomIntersection = intersectBase(ray, bottomCenter, axisDir.scale(-1)); // bottom cap normal points opposite to axis
 
         if (bottomIntersection != null && !containsPoint(intersections, bottomIntersection))
             intersections.add(bottomIntersection);
@@ -142,6 +141,7 @@ public class Cylinder extends Tube {
                 intersections.set(1, temp);
             }
         }
-        return intersections.stream().map(i -> new Intersection(this, i)).collect(Collectors.toList());
+
+        return intersections;
     }
 }
