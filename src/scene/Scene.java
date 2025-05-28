@@ -2,41 +2,27 @@ package scene;
 
 import geometries.Geometries;
 import lighting.AmbientLight;
+import lighting.LightSource;
 import primitives.Color;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Represents a 3D scene containing geometry, background color, and lighting.
  */
 public class Scene {
 
-    /**
-     * The name of the scene.
-     */
     public String name;
 
-    /**
-     * The background color of the scene.
-     * Defaults to black.
-     */
     public Color background = Color.BLACK;
 
-    /**
-     * The ambient light in the scene.
-     * Defaults to {@link AmbientLight#NONE}.
-     */
     public AmbientLight ambientLight = AmbientLight.NONE;
 
-    /**
-     * The collection of geometrical objects in the scene.
-     * Initialized as an empty collection.
-     */
     public Geometries geometries = new Geometries();
 
-    /**
-     * Constructs a new {@code Scene} with the given name.
-     *
-     * @param sceneName The name of the scene.
-     */
+    public List<LightSource> lights = new LinkedList<LightSource>();
+
     public Scene(String sceneName) {
         name = sceneName;
     }
@@ -71,6 +57,12 @@ public class Scene {
      */
     public Scene setGeometries(Geometries geometries) {
         this.geometries = geometries;
+        return this;
+    }
+
+
+    public Scene setLights(List<LightSource> lights) {
+        this.lights = lights;
         return this;
     }
 }
