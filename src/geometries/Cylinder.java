@@ -6,6 +6,7 @@ import primitives.Vector;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static primitives.Util.*;
 
@@ -90,7 +91,7 @@ public class Cylinder extends Tube {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    public List<Intersection> calculateIntersectionHelper(Ray ray) {
         List<Point> intersections = new LinkedList<>();
 
         // Intersections with the infinite tube surface
@@ -141,7 +142,6 @@ public class Cylinder extends Tube {
                 intersections.set(1, temp);
             }
         }
-
-        return intersections;
+        return intersections.stream().map(i -> new Intersection(this, i)).collect(Collectors.toList());
     }
 }
