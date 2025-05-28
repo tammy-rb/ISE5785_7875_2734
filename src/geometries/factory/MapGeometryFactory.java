@@ -1,7 +1,6 @@
 package geometries.factory;
 
 import geometries.*;
-import geometries.factory.GeometryFactory;
 import primitives.*;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class MapGeometryFactory implements GeometryFactory<Map<String, String>> 
 
         switch (type.toLowerCase()) {
             case "sphere":
-                return new Sphere(Double.parseDouble(data.get("radius")), parsePoint(data.get("center")));
+                return new Sphere(parsePoint(data.get("center")), Double.parseDouble(data.get("radius")));
 
             case "triangle":
                 return new Triangle(parsePoint(data.get("p0")), parsePoint(data.get("p1")), parsePoint(data.get("p2")));

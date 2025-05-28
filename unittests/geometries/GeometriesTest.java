@@ -48,8 +48,8 @@ class GeometriesTest {
                         new Point(1, 0, 3),
                         new Point(3, 0, 0)),
                 new Sphere(
-                        1,
-                        new Point(0, 2, 0)));
+                        new Point(0, 2, 0), 1
+                ));
 
         // ============ Equivalence Partitions Tests ==============
 

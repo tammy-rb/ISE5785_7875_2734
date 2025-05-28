@@ -40,7 +40,7 @@ public class RenderTests {
                 .setAmbientLight(new AmbientLight(new Color(255, 191, 191)));
         scene.geometries //
                 .add(// center
-                        new Sphere(50d, new Point(0, 0, -100)),
+                        new Sphere(new Point(0, 0, -100), 50d),
                         // up left
                         new Triangle(new Point(-100, 0, -100), new Point(0, 100, -100), new Point(-100, 100, -100)),
                         // down left
@@ -68,7 +68,7 @@ public class RenderTests {
         Scene scene = new Scene("Multi color").setAmbientLight(new AmbientLight(new Color(51, 51, 51)));
         scene.geometries //
                 .add(// center
-                        new Sphere(50, new Point(0, 0, -100)),
+                        new Sphere(new Point(0, 0, -100), 50),
                         // up left
                         new Triangle(new Point(-100, 0, -100), new Point(0, 100, -100), new Point(-100, 100, -100)) //
                                 .setEmission(new Color(GREEN)),
@@ -116,7 +116,7 @@ public class RenderTests {
         Scene scene = new Scene("Multi color").setAmbientLight(new AmbientLight(new Color(WHITE)));
         scene.geometries //
                 .add(// center
-                        new Sphere(50, new Point(0, 0, -100))
+                        new Sphere(new Point(0, 0, -100), 50)
                                 .setMaterial(new Material().setKA(new Double3(0.4))),
                         // up left
                         new Triangle(

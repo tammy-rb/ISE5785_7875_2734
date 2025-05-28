@@ -24,7 +24,7 @@ class SphereTests {
 
         // ============ Equivalence Partitions Tests ==============
         // TC01: Basic sphere
-        Sphere sphere = new Sphere(1, center);
+        Sphere sphere = new Sphere(center, 1);
 
         // ensure there are no exceptions and getNormal work correctly
         assertDoesNotThrow(() -> sphere.getNormal(new Point(0, 0, 1)),
@@ -46,7 +46,7 @@ class SphereTests {
      */
     @Test
     void testFindIntersections() {
-        Sphere sphere = new Sphere(1, new Point(2, 0, 0));
+        Sphere sphere = new Sphere(new Point(2, 0, 0), 1);
 
         // ============ Equivalence Partitions Tests ==============
         // TC01: Ray starts before the sphere and intersects it twice

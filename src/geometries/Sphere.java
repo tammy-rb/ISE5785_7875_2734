@@ -15,10 +15,10 @@ public class Sphere extends RadialGeometry {
     /**
      * Constructor for creating a sphere.
      *
-     * @param radius The radius of the sphere.
      * @param center The center of the sphere.
+     * @param radius The radius of the sphere.
      */
-    public Sphere(double radius, Point center) {
+    public Sphere(Point center, double radius) {
         super(radius);
         this.center = center;
     }

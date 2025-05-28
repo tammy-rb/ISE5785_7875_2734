@@ -59,28 +59,28 @@ public class CameraIntersectionsIntegrationTests {
         // ============ Equivalence Partitions Tests ==============
         // TC01: Small sphere in front of the view plane center — 2 rays should intersect
         assertIntersections(2,
-                new Sphere(1, new Point(0, 0, -3)),
+                new Sphere(new Point(0, 0, -3), 1),
                 CAMERA_DEFAULT);
 
         // TC02: Large sphere covering the entire view plane — 18 rays should intersect
         assertIntersections(18,
-                new Sphere(2.5, new Point(0, 0, -2.5)),
+                new Sphere(new Point(0, 0, -2.5), 2.5),
                 CAMERA_SHIFTED);
 
         // TC03: Medium sphere partially intersected — 10 rays should intersect
         assertIntersections(10,
-                new Sphere(2, new Point(0, 0, -2)),
+                new Sphere(new Point(0, 0, -2), 2),
                 CAMERA_SHIFTED);
 
         // =============== Boundary Values Tests ==================
         // TC11: Very large sphere encompassing the camera — 9 rays should intersect
         assertIntersections(9,
-                new Sphere(4, new Point(0, 0, 0)),
+                new Sphere(new Point(0, 0, 0), 4),
                 CAMERA_DEFAULT);
 
         // TC12: Small sphere behind the camera — no intersections expected
         assertIntersections(0,
-                new Sphere(0.5, new Point(0, 0, 1)),
+                new Sphere(new Point(0, 0, 1), 0.5),
                 CAMERA_DEFAULT);
     }
 
