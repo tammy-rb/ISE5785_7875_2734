@@ -27,7 +27,7 @@ public class Triangle extends Polygon {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         var intersections = plane.findIntersections(ray);
         if (intersections == null) return null;
 

@@ -39,7 +39,7 @@ public class Sphere extends RadialGeometry {
      * @return A list of intersection points, or {@code null} if there are none.
      */
     @Override
-    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         // Special case: the ray starts at the center of the sphere
         if (center.equals(ray.getHead())) {
             return List.of(new Intersection(this, ray.getPoint(radius)));

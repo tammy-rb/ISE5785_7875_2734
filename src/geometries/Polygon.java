@@ -94,7 +94,7 @@ public class Polygon extends Geometry {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         var intersections = this.plane.findIntersections(ray);
         if (intersections == null)
             return null;

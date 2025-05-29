@@ -62,7 +62,7 @@ public class Tube extends RadialGeometry {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         Vector vAxis = axis.getDirection(); // Axis direction
         Point p0 = axis.getHead();          // Axis origin
         Point p = ray.getHead();            // Ray origin

@@ -1,6 +1,5 @@
 package renderer;
 
-import lighting.Light;
 import lighting.LightSource;
 import primitives.*;
 import scene.Scene;
@@ -17,6 +16,7 @@ import static primitives.Util.alignZero;
  * any geometry in the scene, and the background color otherwise.
  */
 public class SimpleRayTracer extends RayTracerBase {
+    private static final double DELTA = 0.1;
 
     /**
      * Constructs a new {@code SimpleRayTracer} for a given scene.
@@ -32,7 +32,7 @@ public class SimpleRayTracer extends RayTracerBase {
         List<Intersection> intersections = scene.geometries.calculateIntersections(ray);
         if (intersections == null)
             return scene.background;
-        return calcColor(ray.findClosestIntersection(intersections),ray);
+        return calcColor(ray.findClosestIntersection(intersections), ray);
     }
 
     /**
@@ -43,7 +43,7 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the ambient light {@link Color} at the point
      */
     private Color calcColor(Intersection intersection, Ray ray) {
-        if (!preprocessIntersection(intersection, ray.getDirection())){
+        if (!preprocessIntersection(intersection, ray.getDirection())) {
             return Color.BLACK;
         }
         return scene.ambientLight.getIntensity().scale(intersection.material.kA)
@@ -67,7 +67,7 @@ public class SimpleRayTracer extends RayTracerBase {
     private Color calcColorLocalEffects(Intersection intersection) {
         Color color = intersection.geometry.getEmission();
         for (LightSource lightSource : scene.lights) {
-            if(!setLightSource(intersection, lightSource)){
+            if (!setLightSource(intersection, lightSource) || !unshaded(intersection, intersection.l)) {
                 continue;
             }
             color = color.add(
@@ -79,12 +79,20 @@ public class SimpleRayTracer extends RayTracerBase {
         return color;
     }
 
-    private Double3 calcSpecular(Intersection intersection){
+    private Double3 calcSpecular(Intersection intersection) {
         Vector r = intersection.l.subtract(intersection.normal.scale(2 * intersection.lNormal));
-        return intersection.material.kS.scale(Math.pow(Math.max(0,alignZero(intersection.v.scale(-1).dotProduct(r))), intersection.material.nSH));
+        return intersection.material.kS.scale(Math.pow(Math.max(0, alignZero(intersection.v.scale(-1).dotProduct(r))), intersection.material.nSH));
     }
 
     private Double3 calcDiffusive(Intersection intersection) {
         return intersection.material.kD.scale(Math.abs(intersection.lNormal));
+    }
+
+    private boolean unshaded(Intersection intersection, Vector l) {
+        Vector pointToLight = l.scale(-1);
+        Vector delta = intersection.normal.scale(intersection.lNormal < 0 ? DELTA : -DELTA);
+        Ray shadowRay = new Ray(intersection.point.add(delta), pointToLight);
+        var intersections = scene.geometries.calculateIntersections(shadowRay);
+        return intersections == null;
     }
 }

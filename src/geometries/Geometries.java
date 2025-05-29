@@ -52,7 +52,7 @@ public class Geometries extends Intersectable {
      * @return A list of unique intersection points, or null if none found
      */
     @Override
-    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         List<Intersection> intersections = new ArrayList<>();
 
         for (Intersectable geometry : geometries) {

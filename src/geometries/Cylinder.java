@@ -91,11 +91,11 @@ public class Cylinder extends Tube {
     }
 
     @Override
-    public List<Intersection> calculateIntersectionHelper(Ray ray) {
+    public List<Intersection> calculateIntersectionsHelper(Ray ray) {
         List<Point> intersections = new LinkedList<>();
 
         // Intersections with the infinite tube surface
-        List<Intersection> tube_intersections = super.calculateIntersectionHelper(ray);
+        List<Intersection> tube_intersections = super.calculateIntersectionsHelper(ray);
         List<Point> tubeIntersections = null;
         if (tube_intersections != null)
             tubeIntersections = tube_intersections.stream().map(intersection -> intersection.point).toList();

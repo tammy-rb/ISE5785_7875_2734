@@ -31,10 +31,9 @@ public abstract class Intersectable {
         public Intersection(Geometry geometry, Point point) {
             this.geometry = geometry;
             this.point = point;
-            if (geometry != null){
+            if (geometry != null) {
                 this.material = geometry.getMaterial();
-            }
-            else{
+            } else {
                 this.material = null;
             }
         }
@@ -75,11 +74,11 @@ public abstract class Intersectable {
         return list == null ? null : list.stream().map(intersection -> intersection.point).toList();
     }
 
-    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         return null;
     }
 
     public final List<Intersection> calculateIntersections(Ray ray) {
-        return calculateIntersectionHelper(ray);
+        return calculateIntersectionsHelper(ray);
     }
 }

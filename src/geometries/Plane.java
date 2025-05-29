@@ -63,7 +63,7 @@ public class Plane extends Geometry {
      * @return a list containing the intersection point, or {@code null} if there is no intersection
      */
     @Override
-    protected List<Intersection> calculateIntersectionHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
         if (p.equals(ray.getHead()))
             return null;
 
