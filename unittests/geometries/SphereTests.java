@@ -195,4 +195,44 @@ class SphereTests {
         assertNull(sphere.findIntersections(ray113),
                 "Error: Ray doesn't intersect — should return null");
     }
+
+    @Test
+    void testFindIntersectionsMaxDistanceTest() {
+        Sphere sphere = new Sphere(new Point(0, 0, 1), 2);
+        //tc01: ray starts and ends before the sphere (no intersection)
+        assertNull(sphere.calculateIntersections(new Ray(
+                        new Point(4, -4, 2),
+                        new Vector(-1, 1, 0)), 1),
+                "Error: Ray doesn't intersect — should return null");
+
+        //tco2: ray starts before the sphere and ends inside the sphere
+        assertEquals(1, sphere.calculateIntersections(new Ray(
+                        new Point(2, -1, 2),
+                        new Vector(-1, 1, 0)), 1).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+        //tco3: ray starts inside the sphere and ends inside the sphere (no intersections)
+        assertNull(sphere.calculateIntersections(new Ray(
+                        new Point(1, -1, 2),
+                        new Vector(-1, 1, 0)), 1),
+                "Error: Ray doesn't intersect — should return null");
+
+        //tco4: ray starts inside the sphere and ends inside the sphere (no intersections)
+        assertEquals(1, sphere.calculateIntersections(new Ray(
+                        new Point(0, 0, 1),
+                        new Vector(0, 5, 0)), 5).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+        //tco5: ray starts inside the sphere and ends inside the sphere (no intersections)
+        assertEquals(1, sphere.calculateIntersections(new Ray(
+                        new Point(1, 1, 0.5),
+                        new Vector(-1, 4, 0.5)), 5).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+        //tco6: ray starts inside the sphere and ends inside the sphere (no intersections)
+        assertNull(sphere.calculateIntersections(new Ray(
+                        new Point(3, 0, 0),
+                        new Vector(1, 0, 0)), 1),
+                "Error: Ray doesn't intersect — should return null");
+    }
 }

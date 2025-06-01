@@ -62,7 +62,7 @@ public class Tube extends RadialGeometry {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         Vector vAxis = axis.getDirection(); // Axis direction
         Point p0 = axis.getHead();          // Axis origin
         Point p = ray.getHead();            // Ray origin
@@ -109,8 +109,8 @@ public class Tube extends RadialGeometry {
         double t1 = alignZero((-b + sqrtDiscriminant) / (2 * a));
         double t2 = alignZero((-b - sqrtDiscriminant) / (2 * a));
 
-        Point p1 = t1 > 0 ? ray.getPoint(t1) : null;
-        Point p2 = t2 > 0 ? ray.getPoint(t2) : null;
+        Point p1 = t1 > 0 && alignZero(t1 - maxDistance) <= 0 ? ray.getPoint(t1) : null;
+        Point p2 = t2 > 0 && alignZero(t2 - maxDistance) <= 0 ? ray.getPoint(t2) : null;
 
         if (p1 != null && p2 != null) {
             if (alignZero(t1 - t2) == 0)

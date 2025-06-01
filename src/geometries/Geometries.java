@@ -52,11 +52,11 @@ public class Geometries extends Intersectable {
      * @return A list of unique intersection points, or null if none found
      */
     @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         List<Intersection> intersections = new ArrayList<>();
 
         for (Intersectable geometry : geometries) {
-            List<Intersection> geoIntersections = geometry.calculateIntersections(ray);
+            List<Intersection> geoIntersections = geometry.calculateIntersections(ray, maxDistance);
             if (geoIntersections != null) {
                 intersections.addAll(geoIntersections); // Keep all, even duplicates
             }

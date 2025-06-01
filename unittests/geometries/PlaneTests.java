@@ -173,4 +173,21 @@ class PlaneTests {
         assertNull(plane.findIntersections(ray17),
                 "Error: Ray starts at q — should return null");
     }
+
+    @Test
+    void testFindIntersectionsMaxDistanceTest() {
+        Plane plane = new Plane(new Point(1, 0, 0), new Vector(0, 0, 1));
+        Ray ray = new Ray(new Point(0, 0, 5), new Vector(0, 0, -1));
+        assertNull(plane.calculateIntersections(ray, 1),
+                "Error: Ray doesn't intersect — should return null");
+
+        assertEquals(1, plane.calculateIntersections(ray, 5).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+        assertEquals(1, plane.calculateIntersections(ray, 6).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+        assertNull(plane.calculateIntersections(new Ray(new Point(1, 0, -5), new Vector(-1, -1, -1))),"Error");
+
+    }
 }

@@ -81,4 +81,41 @@ class GeometriesTest {
         assertEquals(4, geometries.findIntersections(ray14).size(),
                 "Error: Wrong number of intersection points when intersecting all geometries");
     }
+
+    @Test
+    void testFindIntersectionsMaxDistance() {
+        Geometries geometries = new Geometries();
+        geometries.add(new Cylinder(
+                        1,
+                        new Ray(
+                                new Point(2, 0, 0),
+                                new Vector(0, 0, 1)),
+                        4),
+                new Triangle(
+                        new Point(0, 0, 0),
+                        new Point(4, 0, 0),
+                        new Point(4, 4, 0)),
+                new Tube(1,
+                        new Ray(
+                                new Point(-2, 0, 0),
+                                new Vector(0, 0, 1))),
+                new Plane(
+                        new Point(0, 0, 0),
+                        new Vector(0, 0, 1)),
+                new Sphere(new Point(0, 3, 0), 1)
+        );
+
+        Ray ray = new Ray(new Point(1, 5, 0), new Vector(-3, -7, 0));
+        assertEquals(1, geometries.calculateIntersections(ray, 2).size(), "Error");
+        assertEquals(2, geometries.calculateIntersections(ray, 3.5).size(), "Error");
+        assertEquals(4, geometries.calculateIntersections(ray, 11).size(), "Error");
+        Ray ray1 = new Ray(new Point(3, 2, -1), new Vector(-1, -4, 6));
+        assertEquals(2, geometries.calculateIntersections(ray1, 1.5).size(), "Error");
+        assertEquals(3, geometries.calculateIntersections(ray1, 3).size(), "Error");
+        assertEquals(4, geometries.calculateIntersections(ray1, 10).size(), "Error");
+        Ray ray2 = new Ray(new Point(6, 1, -1), new Vector(-18, -1, 6));
+        assertNull(geometries.calculateIntersections(ray2, 0.5), "error");
+        assertEquals(6, geometries.calculateIntersections(ray2, 30).size(), "Error");
+
+    }
 }

@@ -7,6 +7,7 @@ import primitives.Vector;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 /**
@@ -27,7 +28,7 @@ public class Triangle extends Polygon {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         var intersections = plane.findIntersections(ray);
         if (intersections == null) return null;
 
@@ -49,8 +50,14 @@ public class Triangle extends Polygon {
 
         double d1 = n1.dotProduct(n2);
         double d2 = n1.dotProduct(n3);
-        if (d1 > 0 && d2 > 0)
-            return intersections.stream().map(i -> new Intersection(this, i)).collect(Collectors.toList());
+        if (d1 > 0 && d2 > 0) {
+            List<Intersection> intersectionList = intersections.stream()
+                    .filter(i -> alignZero(i.distance(ray.getHead()) - maxDistance) <= 0)
+                    .map(i -> new Intersection(this, i)).collect(Collectors.toList());
+            if (!intersectionList.isEmpty()) {
+                return intersectionList;
+            }
+        }
         return null;
     }
 }

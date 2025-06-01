@@ -62,7 +62,7 @@ public class Cylinder extends Tube {
      * @param normal The normal vector of the cap (aligned with cylinder axis).
      * @return The intersection point if it exists and lies within the cap’s radius, otherwise {@code null}.
      */
-    private Point intersectBase(Ray ray, Point center, Vector normal) {
+    private Point intersectBase(Ray ray, Point center, Vector normal, double maxDistance) {
         // Represent the cap as a plane
         Plane basePlane = new Plane(center, normal);
 
@@ -74,7 +74,9 @@ public class Cylinder extends Tube {
             return null;
 
         Point intersection = intersections.getFirst();
-        return alignZero(intersection.distance(center) - radius) <= 0 ? intersection : null;
+        return alignZero(intersection.distance(center) - radius) <= 0 &&
+                alignZero(ray.getHead().distance(intersection) - maxDistance) <= 0
+                ? intersection : null;
     }
 
     /**
@@ -91,11 +93,11 @@ public class Cylinder extends Tube {
     }
 
     @Override
-    public List<Intersection> calculateIntersectionsHelper(Ray ray) {
+    public List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         List<Point> intersections = new LinkedList<>();
 
         // Intersections with the infinite tube surface
-        List<Intersection> tube_intersections = super.calculateIntersectionsHelper(ray);
+        List<Intersection> tube_intersections = super.calculateIntersectionsHelper(ray, maxDistance);
         List<Point> tubeIntersections = null;
         if (tube_intersections != null)
             tubeIntersections = tube_intersections.stream().map(intersection -> intersection.point).toList();
@@ -117,14 +119,14 @@ public class Cylinder extends Tube {
         // Intersections with the bottom cap
         Point bottomCenter = axis.getHead();
         Vector axisDir = axis.getDirection();
-        Point bottomIntersection = intersectBase(ray, bottomCenter, axisDir.scale(-1)); // bottom cap normal points opposite to axis
+        Point bottomIntersection = intersectBase(ray, bottomCenter, axisDir.scale(-1), maxDistance); // bottom cap normal points opposite to axis
 
         if (bottomIntersection != null && !containsPoint(intersections, bottomIntersection))
             intersections.add(bottomIntersection);
 
         // Intersections with the top cap
         Point topCenter = axis.getPoint(height);
-        Point topIntersection = intersectBase(ray, topCenter, axisDir);
+        Point topIntersection = intersectBase(ray, topCenter, axisDir, maxDistance);
 
         if (topIntersection != null && !containsPoint(intersections, topIntersection))
             intersections.add(topIntersection);

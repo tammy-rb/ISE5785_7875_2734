@@ -901,4 +901,49 @@ class CylinderTests {
                 result80,
                 "ERROR: Intersection point incorrect");
     }
+
+    @Test
+    void testFindIntersectionsMaxDistanceTest() {
+        Cylinder cylinder = new Cylinder(1, new Ray(new Point(2, 0, 0), new Vector(0, 0, 1)), 4);
+        Ray ray = new Ray(new Point(0, 0, 3), new Vector(1, 0, 0));
+
+        //ray ends before the tube
+        assertNull(cylinder.calculateIntersections(ray, 0.5),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends at the tube
+        assertEquals(1, cylinder.calculateIntersections(ray, 1).size(),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends inside the tube
+        assertEquals(1, cylinder.calculateIntersections(ray, 2).size(),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends on the lateral surface of the tube
+        assertEquals(2, cylinder.calculateIntersections(ray, 3).size(),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends after the tube
+        assertEquals(2, cylinder.calculateIntersections(ray, 5).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+        //ray starts on the lateral surface
+        assertEquals(1, cylinder.calculateIntersections(new Ray(new Point(1, 0, 2), new Vector(1, 0, 0)), 5).size(), "Error");
+        //ray starts and ends within the tube
+        assertNull(cylinder.calculateIntersections(new Ray(new Point(2, 0, 2), new Vector(1, 0, 0)), 0.5), "Error");
+        //ray starts within the tube and ends after it
+        assertEquals(1, cylinder.calculateIntersections(new Ray(new Point(2, 0, 2), new Vector(1, 0, 0)), 3).size(), "Error");
+        Ray ray1=new Ray(new Point(2,0,6),new Vector(0,0,-1));
+        //ray ends before the base
+        assertNull(cylinder.calculateIntersections(ray1,1),"error");
+        //ray ends at the base
+        assertEquals(1, cylinder.calculateIntersections(ray1, 2).size(),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends within the cylinder
+        assertEquals(1, cylinder.calculateIntersections(ray1, 4).size(),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends at second base
+        assertEquals(2, cylinder.calculateIntersections(ray1, 6).size(),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends after second base
+        assertEquals(2, cylinder.calculateIntersections(ray1, 7).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+    }
 }

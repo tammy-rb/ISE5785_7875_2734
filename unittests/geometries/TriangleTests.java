@@ -102,4 +102,26 @@ class TriangleTests {
         assertNull(triangle.findIntersections(ray13),
                 "Error: Ray intersects on edge continuation — should return null");
     }
+
+    @Test
+    void testFindIntersectionsMaxDistanceTest() {
+        Triangle triangle = new Triangle(
+                new Point(1, 0, 0),
+                new Point(1, 6, 0),
+                new Point(6, 0, 0));
+
+        Ray ray = new Ray(new Point(3, 2, 3), new Vector(0, 0, -1));
+
+        assertEquals(1, triangle.calculateIntersections(ray, 3).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+        assertEquals(1, triangle.calculateIntersections(ray, 4).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+        assertNull(triangle.calculateIntersections(ray, 2),
+                "Error: Ray doesn't intersect — should return null");
+
+        assertNull(triangle.calculateIntersections(new Ray(new Point(3, 1, -1), new Vector(-1, -1, -1)), 2),
+                "Error: Ray doesn't intersect — should return null");
+    }
 }

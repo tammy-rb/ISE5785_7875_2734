@@ -403,4 +403,34 @@ class TubeTests {
         assertEquals(List.of(new Point(3, 0, 2)), result47,
                 "ERROR: intersection point is not correct");
     }
+
+    @Test
+    void testFindIntersectionsMaxDistanceTest() {
+        Tube tube = new Tube(1, new Ray(new Point(1, 0, 0), new Vector(0, 0, 1)));
+        Ray ray = new Ray(new Point(-1, 0, 3), new Vector(1, 0, 0));
+
+        //ray ends before the tube
+        assertNull(tube.calculateIntersections(ray, 0.5),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends at the tube
+        assertEquals(1, tube.calculateIntersections(ray, 1).size(),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends inside the tube
+        assertEquals(1, tube.calculateIntersections(ray, 2).size(),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends on the lateral surface of the tube
+        assertEquals(2, tube.calculateIntersections(ray, 3).size(),
+                "Error: Ray doesn't intersect — should return null");
+        //ray ends after the tube
+        assertEquals(2, tube.calculateIntersections(ray, 5).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+        //ray starts on the lateral surface
+        assertEquals(1, tube.calculateIntersections(new Ray(new Point(0, 0, 2), new Vector(1, 0, 0)), 5).size(), "Error");
+        //ray starts and ends within the tube
+        assertNull(tube.calculateIntersections(new Ray(new Point(1, 0, 2), new Vector(1, 0, 0)), 0.5), "Error");
+        //ray starts within the tube and ends after it
+        assertEquals(1, tube.calculateIntersections(new Ray(new Point(1, 0, 2), new Vector(1, 0, 0)), 3).size(), "Error");
+
+    }
 }

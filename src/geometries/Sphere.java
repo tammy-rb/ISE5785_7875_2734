@@ -6,6 +6,8 @@ import primitives.Vector;
 
 import java.util.List;
 
+import static primitives.Util.alignZero;
+
 /**
  * Represents a sphere in 3D space, defined by its center and radius.
  */
@@ -39,7 +41,7 @@ public class Sphere extends RadialGeometry {
      * @return A list of intersection points, or {@code null} if there are none.
      */
     @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         // Special case: the ray starts at the center of the sphere
         if (center.equals(ray.getHead())) {
             return List.of(new Intersection(this, ray.getPoint(radius)));
@@ -60,8 +62,8 @@ public class Sphere extends RadialGeometry {
         double t2 = tm + th;
 
         // Calculate potential intersection points (if they are in front of the ray)
-        Point p1 = t1 > 0 ? ray.getPoint(t1) : null;
-        Point p2 = t2 > 0 ? ray.getPoint(t2) : null;
+        Point p1 = t1 > 0 && alignZero(t1 - maxDistance) <= 0 ? ray.getPoint(t1) : null;
+        Point p2 = t2 > 0 && alignZero(t2 - maxDistance) <= 0 ? ray.getPoint(t2) : null;
 
         // Return the valid intersections (ignoring those behind the ray's origin or at its head)
         if (p1 != null && p2 != null)

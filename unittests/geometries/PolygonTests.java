@@ -155,4 +155,29 @@ class PolygonTests {
         assertNull(polygon.findIntersections(ray13),
                 "Error: Ray intersects exactly on edge — should return null");
     }
+
+    @Test
+    void testFindIntersectionsMaxDistanceTest() {
+        Polygon polygon = new Polygon(new Point[]{
+                new Point(0, 0, 0),
+                new Point(0, 6, 0),
+                new Point(6, 6, 0),
+                new Point(6, 0, 0)});
+
+        Ray ray = new Ray(new Point(0, 1, 1), new Vector(3, 2, -2));
+
+        assertEquals(1, polygon.calculateIntersections(ray, 10).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+        assertNull(polygon.calculateIntersections(new Ray(new Point(2, 1, -1), new Vector(1, 0, -1)), 0.5),
+                "Error: Ray doesn't intersect — should return null");
+
+
+        assertNull(polygon.calculateIntersections(new Ray(new Point(2, 1, 0), new Vector(1, 0, -2)), 0.5),
+                "Error: Ray doesn't intersect — should return null");
+
+        assertEquals(1, polygon.calculateIntersections(new Ray(new Point(3, 3, 1), new Vector(0, 0, -1)), 1).size(),
+                "Error: Ray doesn't intersect — should return null");
+
+    }
 }

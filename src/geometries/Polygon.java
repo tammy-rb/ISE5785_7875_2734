@@ -94,7 +94,7 @@ public class Polygon extends Geometry {
     }
 
     @Override
-    protected List<Intersection> calculateIntersectionsHelper(Ray ray) {
+    protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         var intersections = this.plane.findIntersections(ray);
         if (intersections == null)
             return null;
@@ -124,6 +124,12 @@ public class Polygon extends Geometry {
             if (initialDot * normals[i].dotProduct(normals[i + 1]) <= 0)
                 return null; // not all in the same direction
 
-        return intersections.stream().map(i -> new Intersection(this, i)).collect(Collectors.toList());
+        List<Intersection> intersectionList = intersections.stream()
+                .filter(i -> alignZero(i.distance(ray.getHead()) - maxDistance) <= 0)
+                .map(i -> new Intersection(this, i)).collect(Collectors.toList());
+        if (!intersectionList.isEmpty()) {
+            return intersectionList;
+        }
+        return null;
     }
 }
