@@ -42,8 +42,18 @@ public class Material {
         return this;
     }
 
+    public Material setKT(Double3 kT) {
+        this.kT = kT;
+        return this;
+    }
+
     public Material setKT(double kT) {
         this.kT = new Double3(kT);
+        return this;
+    }
+
+    public Material setKR(Double3 kR) {
+        this.kR = kR;
         return this;
     }
 
