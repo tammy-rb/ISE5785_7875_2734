@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static primitives.Util.alignZero;
-import static primitives.Util.isZero;
 
 /**
  * Triangle class represents a triangle in 3D Cartesian coordinate system.
@@ -52,7 +51,7 @@ public class Triangle extends Polygon {
         double d2 = n1.dotProduct(n3);
         if (d1 > 0 && d2 > 0) {
             List<Intersection> intersectionList = intersections.stream()
-                    .filter(i -> alignZero(i.distance(ray.getHead()) - maxDistance) <= 0)
+                    .filter(i -> alignZero(i.distance(ray.getHead())) <= maxDistance)
                     .map(i -> new Intersection(this, i)).collect(Collectors.toList());
             if (!intersectionList.isEmpty()) {
                 return intersectionList;

@@ -7,6 +7,7 @@ import primitives.Vector;
 import java.util.List;
 
 import static primitives.Util.alignZero;
+import static primitives.Util.isZero;
 
 /**
  * Represents a plane in 3D space defined by a point and a normal vector.
@@ -70,7 +71,7 @@ public class Plane extends Geometry {
             return null;
 
         double nv = normal.dotProduct(ray.getDirection());
-        if (nv == 0)
+        if (isZero(nv))
             return null;
 
         double t = normal.dotProduct(p.subtract(ray.getHead())) / nv;
