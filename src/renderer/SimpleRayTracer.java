@@ -124,12 +124,12 @@ public class SimpleRayTracer extends RayTracerBase {
     }
 
     private Ray constructRefractedRay(Intersection intersection) {
-        Vector delta = intersection.normal.scale(intersection.lNormal < 0 ? -DELTA : DELTA);
+        Vector delta = intersection.normal.scale(intersection.vNormal < 0 ? -DELTA : DELTA);
         return new Ray(intersection.point.add(delta), intersection.v);
     }
 
     private Ray constructReflectedRay(Intersection intersection) {
-        Vector delta = intersection.normal.scale(intersection.lNormal < 0 ? DELTA : -DELTA);
+        Vector delta = intersection.normal.scale(intersection.vNormal < 0 ? DELTA : -DELTA);
         return new Ray(intersection.point.add(delta), intersection.v.subtract(intersection.normal.scale(2 * intersection.vNormal)));
     }
 
@@ -140,12 +140,11 @@ public class SimpleRayTracer extends RayTracerBase {
         }
         Intersection intersection = findClosestIntersection(ray);
         if (intersection == null) {
-            return scene.background;
+            return scene.background.scale(kx);
         }
-        if (!preprocessIntersection(intersection, ray.getDirection())) {
-            return Color.BLACK;
-        }
-        return calcColor(intersection, level - 1, kkx).scale(kx);
+        return preprocessIntersection(intersection, ray.getDirection()) ?
+                calcColor(intersection, level - 1, kkx).scale(kx) :
+                Color.BLACK;
     }
 
     private Color calcGlobalEffects(Intersection intersection, int level, Double3 k) {
