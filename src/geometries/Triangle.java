@@ -28,34 +28,50 @@ public class Triangle extends Polygon {
 
     @Override
     protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
+        // First find intersection with the plane
         var intersections = plane.findIntersections(ray);
         if (intersections == null) return null;
 
         Point p = intersections.getFirst();
+
+        // Check distance constraint
+        if (alignZero(p.distance(ray.getHead()) - maxDistance) > 0) {
+            return null;
+        }
+
+        // Use barycentric coordinates for robust inside/outside test
         Point p0 = vertices.get(0);
         Point p1 = vertices.get(1);
         Point p2 = vertices.get(2);
         if (p.equals(p0) || p.equals(p1) || p.equals(p2))
             return null;
+        // Calculate triangle edges
+        Vector edge1 = p1.subtract(p0);
+        Vector edge2 = p2.subtract(p0);
+        Vector pointVec = p.subtract(p0);
 
-        Vector n1, n2, n3;
         try {
-            n1 = p1.subtract(p0).crossProduct(p0.subtract(p));
-            n2 = p2.subtract(p1).crossProduct(p1.subtract(p));
-            n3 = p0.subtract(p2).crossProduct(p2.subtract(p));
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+            // Calculate barycentric coordinates
+            double dot00 = edge2.dotProduct(edge2);
+            double dot01 = edge2.dotProduct(edge1);
+            double dot02 = edge2.dotProduct(pointVec);
+            double dot11 = edge1.dotProduct(edge1);
+            double dot12 = edge1.dotProduct(pointVec);
 
-        double d1 = n1.dotProduct(n2);
-        double d2 = n1.dotProduct(n3);
-        if (d1 > 0 && d2 > 0) {
-            List<Intersection> intersectionList = intersections.stream()
-                    .filter(i -> alignZero(i.distance(ray.getHead())) <= maxDistance)
-                    .map(i -> new Intersection(this, i)).collect(Collectors.toList());
-            if (!intersectionList.isEmpty()) {
-                return intersectionList;
+            double invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
+            double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+            double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+            // Check if point is inside triangle
+            // Use small epsilon to exclude edge points and avoid artifacts
+            final double EPSILON = 1e-10;
+            if (u > EPSILON && v > EPSILON && (u + v) < (1.0 - EPSILON)) {
+                return List.of(new Intersection(this, p));
             }
+
+        } catch (Exception e) {
+            // Handle degenerate cases
+            return null;
         }
         return null;
     }
