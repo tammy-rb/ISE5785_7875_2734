@@ -16,7 +16,6 @@ import static primitives.Util.alignZero;
  * any geometry in the scene, and the background color otherwise.
  */
 public class SimpleRayTracer extends RayTracerBase {
-    private static final double DELTA = 0.1;
     private static final int MAX_CALC_COLOR_LEVEL = 10;
     private static final double MIN_CALC_COLOR_K = 0.001;
     private static final Double3 INITIAL_K = Double3.ONE;
@@ -107,8 +106,7 @@ public class SimpleRayTracer extends RayTracerBase {
 
     private boolean unshaded(Intersection intersection, Vector l) {
         Vector pointToLight = l.scale(-1);
-        Vector delta = intersection.normal.scale(intersection.lNormal < 0 ? DELTA : -DELTA);
-        Ray shadowRay = new Ray(intersection.point.add(delta), pointToLight);
+        Ray shadowRay = new Ray(intersection.point, pointToLight, intersection.normal);
         var intersections = scene.geometries.calculateIntersections(
                 shadowRay,
                 intersection.light.getDistance(intersection.point));
@@ -124,13 +122,17 @@ public class SimpleRayTracer extends RayTracerBase {
     }
 
     private Ray constructRefractedRay(Intersection intersection) {
-        Vector delta = intersection.normal.scale(intersection.vNormal < 0 ? -DELTA : DELTA);
-        return new Ray(intersection.point.add(delta), intersection.v);
+        return new Ray(intersection.point,
+                intersection.v,
+                intersection.normal.scale(intersection.vNormal < 0 ? -1 : 1)
+        );
     }
 
     private Ray constructReflectedRay(Intersection intersection) {
-        Vector delta = intersection.normal.scale(intersection.vNormal < 0 ? DELTA : -DELTA);
-        return new Ray(intersection.point.add(delta), intersection.v.subtract(intersection.normal.scale(2 * intersection.vNormal)));
+        return new Ray(intersection.point,
+                intersection.v.subtract(intersection.normal.scale(2 * intersection.vNormal)),
+                intersection.normal.scale(intersection.vNormal < 0 ? 1 : -1)
+        );
     }
 
     private Color calcGlobalEffect(Ray ray, Double3 kx, int level, Double3 k) {
