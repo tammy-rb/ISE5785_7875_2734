@@ -74,23 +74,17 @@ public class SimpleRayTracer extends RayTracerBase {
     private Color calcColorLocalEffects(Intersection intersection, Double3 k) {
         Color color = intersection.geometry.getEmission();
         for (LightSource lightSource : scene.lights) {
-            if (!setLightSource(intersection, lightSource) || !unshaded(intersection, intersection.l)) {
+            if (!setLightSource(intersection, lightSource)) {
                 continue;
             }
-            color = color.add(
-                    lightSource.getIntensity(intersection.point).scale(
-                            calcDiffusive(intersection).add(calcSpecular(intersection))
-                    )
-            );
-            //Double3 ktr = transparency(intersection);
-//if (!ktr.product(k).lowerThan(MIN_CALC_COLOR_K)) {
-//Color iL = lightSource.getIntensity(intersection.point).scale(ktr);
-//color = color.add(
-            // lightSource.getIntensity(intersection.point).scale(
-            // calcDiffusive(intersection).add(calcSpecular(intersection))
-            //                        )
-//                );
-//}
+            Double3 ktr = transparency(intersection);
+            if (!ktr.product(k).lowerThan(MIN_CALC_COLOR_K)) {
+                color = color.add(
+                        lightSource.getIntensity(intersection.point).scale(ktr).scale(
+                                calcDiffusive(intersection).add(calcSpecular(intersection))
+                        )
+                );
+            }
         }
         return color;
     }
@@ -119,6 +113,22 @@ public class SimpleRayTracer extends RayTracerBase {
             }
         }
         return true;
+    }
+
+    private Double3 transparency(Intersection intersection) {
+        Vector pointToLight = intersection.l.scale(-1);
+        Ray shadowRay = new Ray(intersection.point, pointToLight, intersection.normal);
+        var intersections = scene.geometries.calculateIntersections(
+                shadowRay,
+                intersection.light.getDistance(intersection.point));
+        if (intersections == null || intersections.isEmpty()) {
+            return Double3.ONE;
+        }
+        Double3 ktr = Double3.ONE;
+        for (Intersection shadowIntersection : intersections) {
+            ktr = ktr.product(shadowIntersection.material.kT);
+        }
+        return ktr;
     }
 
     private Ray constructRefractedRay(Intersection intersection) {
