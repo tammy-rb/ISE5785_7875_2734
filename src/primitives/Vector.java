@@ -1,5 +1,7 @@
 package primitives;
 
+import static primitives.Util.alignZero;
+
 /**
  * Represents a vector in 3D space, extending the {@link Point} class.
  * A vector is defined by its x, y, and z components as their distance
@@ -95,7 +97,7 @@ public class Vector extends Point {
      * @return The squared length of the vector.
      */
     public double lengthSquared() {
-        return this.dotProduct(this);
+        return alignZero(this.dotProduct(this));
     }
 
     /**

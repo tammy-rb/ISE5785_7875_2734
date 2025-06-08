@@ -48,7 +48,7 @@ public class Sphere extends RadialGeometry {
         }
 
         Vector u = center.subtract(ray.getHead());
-        double tm = ray.getDirection().dotProduct(u);
+        double tm = alignZero(ray.getDirection().dotProduct(u));
         double dSquared = u.lengthSquared() - tm * tm;
         double radiusSquared = radius * radius;
 

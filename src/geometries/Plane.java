@@ -70,11 +70,11 @@ public class Plane extends Geometry {
         if (p.equals(ray.getHead()))
             return null;
 
-        double nv = normal.dotProduct(ray.getDirection());
+        double nv = alignZero(normal.dotProduct(ray.getDirection()));
         if (isZero(nv))
             return null;
 
-        double t = normal.dotProduct(p.subtract(ray.getHead())) / nv;
+        double t = alignZero(normal.dotProduct(p.subtract(ray.getHead()))) / nv;
 
         if (t <= 0 || alignZero(t - maxDistance) > 0)
             return null;
