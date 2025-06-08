@@ -70,13 +70,37 @@ public abstract class Intersectable {
         return list == null ? null : list.stream().map(intersection -> intersection.point).toList();
     }
 
-    protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance);
-
+    /**
+     * Returns a list of {@link Intersection} records between the given ray and this geometry,
+     * without limiting the distance (i.e., up to infinity).
+     *
+     * @param ray the ray to intersect
+     * @return a list of {@link Intersection} objects, or {@code null} if no intersections were found
+     */
     public final List<Intersection> calculateIntersections(Ray ray) {
         return calculateIntersections(ray, Double.POSITIVE_INFINITY);
     }
 
+    /**
+     * Returns a list of {@link Intersection} records between the given ray and this geometry,
+     * limited to a maximum distance from the ray origin.
+     *
+     * @param ray         the ray to intersect
+     * @param maxDistance the maximum distance from the ray origin to consider
+     * @return a list of {@link Intersection} objects within the specified distance,
+     * or {@code null} if no intersections were found
+     */
     public final List<Intersection> calculateIntersections(Ray ray, double maxDistance) {
         return calculateIntersectionsHelper(ray, maxDistance);
     }
+
+    /**
+     * Internal abstract method to be implemented by subclasses that computes
+     * the list of intersections between a ray and the geometry, up to a given distance.
+     *
+     * @param ray         the ray to intersect
+     * @param maxDistance the maximum distance from the ray origin to consider
+     * @return a list of {@link Intersection} objects, or {@code null} if none are found
+     */
+    protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance);
 }

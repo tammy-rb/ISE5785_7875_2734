@@ -8,6 +8,11 @@ import scene.Scene;
 
 import static java.awt.Color.*;
 
+/**
+ * This test class sets up a complex scene with various geometric shapes, materials,
+ * and light sources to test the visual rendering capabilities of the ray tracer.
+ * It demonstrates effects such as reflection, refraction, shadows, transparency, and highlights.
+ */
 public class AllEffectsTest {
 
     AllEffectsTest() {}
@@ -16,6 +21,11 @@ public class AllEffectsTest {
     private final Camera.Builder cameraBuilder = Camera.getBuilder()
             .setRayTracer(scene, RayTracerType.SIMPLE);
 
+    /**
+     * Sets up and renders a full 3D scene with different types of lighting,
+     * reflective and transparent materials, and various geometries.
+     * The result is saved as an image file named "CityscapeRender".
+     */
     @Test
     void TestAllEffects() {
         scene.setAmbientLight(new AmbientLight(new Color(20, 20, 20)));
