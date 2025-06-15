@@ -5,54 +5,52 @@ import primitives.Color;
 import primitives.Point;
 import scene.Scene;
 import renderer.PixelManager.Pixel;
+import renderer.blackboard.Blackboard;
+import renderer.blackboard.RectangleBlackboard;
 
 import java.util.LinkedList;
 import java.util.MissingResourceException;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static primitives.Util.*;
 
-/**
- * The {@code Camera} class represents a virtual camera for a 3D rendering engine.
- * It allows you to define the camera's position, orientation, view plane size, and distance from the view plane.
- * A {@link Camera} is built using the Builder pattern via the {@link Camera.Builder} class.
- * The camera can be used to construct rays through view plane pixels and render images using a {@link RayTracerBase}.
- * It also provides utility methods for rendering, displaying grids, and saving the rendered image.
- * The class is {@code Cloneable} to allow safe duplication.
- */
 public class Camera implements Cloneable {
 
-    private Point p0;              // Camera location
-    private Vector vTo;            // "Forward" direction vector
-    private Vector vUp;            // "Up" direction vector
-    private Vector vRight;         // "Right" direction vector (orthogonal to vTo and vUp)
-    private double viewPlaneDistance = 0.0; // Distance to view plane
-    private double viewPlaneWidth = 0.0;    // Width of the view plane
-    private double viewPlaneHeight = 0.0;   // Height of the view plane
-    private Point viewPlaneCenter;         // Center point of the view plane
-    private ImageWriter imageWriter;       // Image writer to handle pixel output
-    private RayTracerBase rayTracer;       // Ray tracer for color calculations
-    private int nX = 1;                    // Number of horizontal pixels
-    private int nY = 1;                    // Number of vertical pixels
-    private int threadsCount = 0; // -2 auto, -1 range/stream, 0 no threads, 1+ number of threads
-    private static final int SPARE_THREADS = 2; // Spare threads if trying to use all the cores
-    private double printInterval = 0; // printing progress percentage interval (0 – no printing)
-    private PixelManager pixelManager; // pixel manager object
+    private Point p0;
+    private Vector vTo;
+    private Vector vUp;
+    private Vector vRight;
+    private double viewPlaneDistance = 0.0;
+    private double viewPlaneWidth = 0.0;
+    private double viewPlaneHeight = 0.0;
+    private Point viewPlaneCenter;
+    private ImageWriter imageWriter;
+    private RayTracerBase rayTracer;
+    private int nX = 1;
+    private int nY = 1;
+    private int threadsCount = 0;
+    private static final int SPARE_THREADS = 2;
+    private double printInterval = 0;
+    private PixelManager pixelManager;
+    private Blackboard blackboard;
+    private int numRays = 1;
 
+    private Camera() {}
 
-    /**
-     * Private constructor for Camera. Use {@link Builder} to construct an instance.
-     */
-    private Camera() {
-    }
-
-    /**
-     * Returns a new {@link Builder} for configuring and constructing a Camera.
-     *
-     * @return A new Builder instance.
-     */
     public static Builder getBuilder() {
         return new Builder();
+    }
+
+    private Point constructPixelCenter(int j, int i) {
+        double rY = viewPlaneHeight / nY;
+        double rX = viewPlaneWidth / nX;
+        double yi = -(i - (double) (nY - 1) / 2) * rY;
+        double xj = (j - (double) (nX - 1) / 2) * rX;
+        Point p = viewPlaneCenter;
+        if (!isZero(xj)) p = p.add(vRight.scale(xj));
+        if (!isZero(yi)) p = p.add(vUp.scale(yi));
+        return p;
     }
 
     /**
@@ -65,41 +63,20 @@ public class Camera implements Cloneable {
      * @return A {@link Ray} from the camera through the specified pixel.
      */
     public Ray constructRay(int nX, int nY, int j, int i) {
-        double rY = viewPlaneHeight / nY;
-        double rX = viewPlaneWidth / nX;
-        double yi = -(i - (double) (nY - 1) / 2) * rY;
-        double xj = (j - (double) (nX - 1) / 2) * rX;
-        Point p = viewPlaneCenter;
-        if (!isZero(xj))
-            p = p.add(vRight.scale(xj));
-        if (!isZero(yi))
-            p = p.add(vUp.scale(yi));
+        Point p = constructPixelCenter(j, i);
         Vector v = p.subtract(p0);
         return new Ray(p0, v);
     }
 
-    /**
-     * Renders the image by casting rays through each pixel and coloring it based on the ray trace result.
-     *
-     * @return This Camera instance (for chaining).
-     */
     public Camera renderImageNoThreads() {
         for (int j = 0; j < nX; j++) {
             for (int i = 0; i < nY; i++)
                 castRay(j, i);
             System.out.println(j);
         }
-
         return this;
     }
 
-    /**
-     * Draws a grid on the image with the given interval and color.
-     *
-     * @param interval Interval between grid lines (in pixels).
-     * @param color    Color of the grid lines.
-     * @return This Camera instance (for chaining).
-     */
     public Camera printGrid(int interval, Color color) {
         for (int i = 0; i < imageWriter.nX(); i++)
             for (int j = 0; j < imageWriter.nY(); j++)
@@ -108,35 +85,32 @@ public class Camera implements Cloneable {
         return this;
     }
 
-    /**
-     * Saves the rendered image to a file with the given name.
-     *
-     * @param imageName The name of the image file to write.
-     * @return This Camera instance (for chaining).
-     */
     public Camera writeToImage(String imageName) {
         this.imageWriter.writeToImage(imageName);
         return this;
     }
 
-    /**
-     * Casts a ray through the given pixel and writes the resulting color to the image.
-     *
-     * @param j Pixel column index.
-     * @param i Pixel row index.
-     */
     private void castRay(int j, int i) {
-        Ray ray = constructRay(nX, nY, j, i);
-        Color intensity = rayTracer.traceRay(ray);
-        imageWriter.writePixel(j, i, intensity);
+        Point pixelCenter = constructPixelCenter(j, i);
+        if (numRays == 1 || blackboard == null) {
+            Ray ray = new Ray(p0, pixelCenter.subtract(p0));
+            Color intensity = rayTracer.traceRay(ray);
+            imageWriter.writePixel(j, i, intensity);
+        } else {
+            blackboard.setCenter(pixelCenter)
+                    .setOrientation(vTo, vRight)
+                    .setWidthHeight(viewPlaneWidth / nX, viewPlaneHeight / nY)
+                    .setNumRays(numRays);
+            List<Ray> rays = blackboard.constructRays(p0);
+            Color color = Color.BLACK;
+            for (Ray ray : rays) {
+                color = color.add(rayTracer.traceRay(ray));
+            }
+            imageWriter.writePixel(j, i, color.reduce(rays.size()));
+        }
         pixelManager.pixelDone();
     }
 
-    /**
-     * Clones the camera instance.
-     *
-     * @return A cloned copy of this camera.
-     */
     @Override
     public Camera clone() {
         try {
@@ -146,9 +120,6 @@ public class Camera implements Cloneable {
         }
     }
 
-    /**
-     * Render image using multi-threading by creating and running raw threads* @return the camera object itself
-     */
     private Camera renderImageRawThreads() {
         var threads = new LinkedList<Thread>();
         while (threadsCount-- > 0)
@@ -160,24 +131,17 @@ public class Camera implements Cloneable {
         for (var thread : threads) thread.start();
         try {
             for (var thread : threads) thread.join();
-        } catch (InterruptedException ignore) {
-        }
+        } catch (InterruptedException ignore) {}
         return this;
     }
 
-    /**
-     * Render image using multi-threading by creating and running raw threads* @return the camera object itself
-     */
     public Camera renderImageStream() {
-        IntStream.range(0, nY).parallel() //
-                .forEach(i -> IntStream.range(0, nX).parallel() //
+        IntStream.range(0, nY).parallel()
+                .forEach(i -> IntStream.range(0, nX).parallel()
                         .forEach(j -> castRay(j, i)));
         return this;
     }
 
-    /**
-     * ...
-     */
     public Camera renderImage() {
         pixelManager = new PixelManager(nY, nX, printInterval);
         return switch (threadsCount) {
@@ -187,20 +151,11 @@ public class Camera implements Cloneable {
         };
     }
 
-    /**
-     * Builder class for constructing {@link Camera} instances.
-     */
     public static class Builder {
         private final Camera camera = new Camera();
         private static final String ERROR_MESSAGE = "Missing rendering data";
         private static final String CLASS_NAME = "Camera";
 
-        /**
-         * Sets the camera position.
-         *
-         * @param location Camera position as a {@link Point}.
-         * @return This Builder instance (for chaining).
-         */
         public Builder setLocation(Point location) {
             if (location == null)
                 throw new IllegalArgumentException("Location cannot be null");
@@ -208,13 +163,6 @@ public class Camera implements Cloneable {
             return this;
         }
 
-        /**
-         * Sets the camera's forward and up vectors.
-         *
-         * @param vTo Forward direction vector.
-         * @param vUp Upward direction vector.
-         * @return This Builder instance (for chaining).
-         */
         public Builder setDirection(Vector vTo, Vector vUp) {
             if (vTo == null || vUp == null)
                 throw new IllegalArgumentException("Direction vectors cannot be null");
@@ -225,13 +173,6 @@ public class Camera implements Cloneable {
             return this;
         }
 
-        /**
-         * Sets the camera's direction using a target point and an up vector.
-         *
-         * @param pTarget Target point to look at.
-         * @param vUp     Upward direction vector.
-         * @return This Builder instance (for chaining).
-         */
         public Builder setDirection(Point pTarget, Vector vUp) {
             if (pTarget == null || vUp == null)
                 throw new IllegalArgumentException("Target point and up vector cannot be null");
@@ -241,12 +182,6 @@ public class Camera implements Cloneable {
             return this;
         }
 
-        /**
-         * Sets the camera's direction using a target point and assumes a default up vector of (0,1,0).
-         *
-         * @param pTarget Target point to look at.
-         * @return This Builder instance (for chaining).
-         */
         public Builder setDirection(Point pTarget) {
             if (pTarget == null)
                 throw new IllegalArgumentException("Target point cannot be null");
@@ -254,13 +189,6 @@ public class Camera implements Cloneable {
             return setDirection(pTarget, camera.vUp);
         }
 
-        /**
-         * Sets the view plane size.
-         *
-         * @param width  Width of the view plane.
-         * @param height Height of the view plane.
-         * @return This Builder instance (for chaining).
-         */
         public Builder setViewPlaneSize(double width, double height) {
             if (alignZero(width) <= 0 || alignZero(height) <= 0)
                 throw new IllegalArgumentException("ViewPlane size must be positive");
@@ -269,12 +197,6 @@ public class Camera implements Cloneable {
             return this;
         }
 
-        /**
-         * Sets the distance from the camera to the view plane.
-         *
-         * @param distance Distance value.
-         * @return This Builder instance (for chaining).
-         */
         public Builder setViewPlaneDistance(double distance) {
             if (alignZero(distance) <= 0)
                 throw new IllegalArgumentException("ViewPlane distance must be positive");
@@ -282,26 +204,12 @@ public class Camera implements Cloneable {
             return this;
         }
 
-        /**
-         * Sets the resolution (number of pixels) of the view plane.
-         *
-         * @param nX Number of columns.
-         * @param nY Number of rows.
-         * @return This Builder instance (for chaining).
-         */
         public Builder setResolution(int nX, int nY) {
             camera.nX = nX;
             camera.nY = nY;
             return this;
         }
 
-        /**
-         * Sets the ray tracer based on the selected {@link RayTracerType}.
-         *
-         * @param scene         The scene to trace rays in.
-         * @param rayTracerType Type of ray tracer.
-         * @return This Builder instance (for chaining).
-         */
         public Builder setRayTracer(Scene scene, RayTracerType rayTracerType) {
             if (rayTracerType == RayTracerType.SIMPLE)
                 camera.rayTracer = new SimpleRayTracer(scene);
@@ -313,7 +221,7 @@ public class Camera implements Cloneable {
         public Builder setMultithreading(int threads) {
             if (threads < -2) throw new IllegalArgumentException("Multithreading must be -2 or higher");
             if (threads >= -1) camera.threadsCount = threads;
-            else { // == -2
+            else {
                 int cores = Runtime.getRuntime().availableProcessors() - SPARE_THREADS;
                 camera.threadsCount = cores <= 2 ? 1 : cores;
             }
@@ -327,13 +235,19 @@ public class Camera implements Cloneable {
             return this;
         }
 
-        /**
-         * Validates and builds the configured {@link Camera} instance.
-         *
-         * @return A fully configured and initialized {@link Camera}.
-         * @throws MissingResourceException If required fields are not set.
-         * @throws IllegalArgumentException If dimensions or distance are invalid.
-         */
+        public Builder setBlackboard(Blackboard blackboard) {
+            if (!(blackboard instanceof RectangleBlackboard)) {
+                throw new IllegalArgumentException("Only RectangleBlackboard is supported");
+            }
+            camera.blackboard = blackboard;
+            return this;
+        }
+
+        public Builder setNumRays(int numRays) {
+            camera.numRays = numRays;
+            return this;
+        }
+
         public Camera build() {
             if (camera.p0 == null)
                 throw new MissingResourceException(ERROR_MESSAGE, CLASS_NAME, "p0");

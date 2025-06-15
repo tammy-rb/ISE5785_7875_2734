@@ -238,7 +238,7 @@ public class SimpleRayTracer extends RayTracerBase {
      * @param intersection the point to test
      * @return the transparency coefficient
      */
-    private Double3 transparency(Intersection intersection) {
+    private Double3 transparency( Intersection intersection) {
         Vector pointToLight = intersection.l.scale(-1);
         Ray shadowRay = new Ray(intersection.point, pointToLight, intersection.normal);
 
