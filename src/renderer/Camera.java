@@ -4,8 +4,11 @@ import primitives.*;
 import primitives.Color;
 import primitives.Point;
 import scene.Scene;
+import renderer.PixelManager.Pixel;
 
+import java.util.LinkedList;
 import java.util.MissingResourceException;
+import java.util.stream.IntStream;
 
 import static primitives.Util.*;
 
@@ -31,6 +34,11 @@ public class Camera implements Cloneable {
     private RayTracerBase rayTracer;       // Ray tracer for color calculations
     private int nX = 1;                    // Number of horizontal pixels
     private int nY = 1;                    // Number of vertical pixels
+    private int threadsCount = 0; // -2 auto, -1 range/stream, 0 no threads, 1+ number of threads
+    private static final int SPARE_THREADS = 2; // Spare threads if trying to use all the cores
+    private double printInterval = 0; // printing progress percentage interval (0 – no printing)
+    private PixelManager pixelManager; // pixel manager object
+
 
     /**
      * Private constructor for Camera. Use {@link Builder} to construct an instance.
@@ -75,10 +83,13 @@ public class Camera implements Cloneable {
      *
      * @return This Camera instance (for chaining).
      */
-    public Camera renderImage() {
-        for (int j = 0; j < nX; j++)
+    public Camera renderImageNoThreads() {
+        for (int j = 0; j < nX; j++) {
             for (int i = 0; i < nY; i++)
                 castRay(j, i);
+            System.out.println(j);
+        }
+
         return this;
     }
 
@@ -118,6 +129,7 @@ public class Camera implements Cloneable {
         Ray ray = constructRay(nX, nY, j, i);
         Color intensity = rayTracer.traceRay(ray);
         imageWriter.writePixel(j, i, intensity);
+        pixelManager.pixelDone();
     }
 
     /**
@@ -132,6 +144,47 @@ public class Camera implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError("Cloning Camera failed", e);
         }
+    }
+
+    /**
+     * Render image using multi-threading by creating and running raw threads* @return the camera object itself
+     */
+    private Camera renderImageRawThreads() {
+        var threads = new LinkedList<Thread>();
+        while (threadsCount-- > 0)
+            threads.add(new Thread(() -> {
+                Pixel pixel;
+                while ((pixel = pixelManager.nextPixel()) != null)
+                    castRay(pixel.col(), pixel.row());
+            }));
+        for (var thread : threads) thread.start();
+        try {
+            for (var thread : threads) thread.join();
+        } catch (InterruptedException ignore) {
+        }
+        return this;
+    }
+
+    /**
+     * Render image using multi-threading by creating and running raw threads* @return the camera object itself
+     */
+    public Camera renderImageStream() {
+        IntStream.range(0, nY).parallel() //
+                .forEach(i -> IntStream.range(0, nX).parallel() //
+                        .forEach(j -> castRay(j, i)));
+        return this;
+    }
+
+    /**
+     * ...
+     */
+    public Camera renderImage() {
+        pixelManager = new PixelManager(nY, nX, printInterval);
+        return switch (threadsCount) {
+            case 0 -> renderImageNoThreads();
+            case -1 -> renderImageStream();
+            default -> renderImageRawThreads();
+        };
     }
 
     /**
@@ -254,6 +307,23 @@ public class Camera implements Cloneable {
                 camera.rayTracer = new SimpleRayTracer(scene);
             else
                 camera.rayTracer = null;
+            return this;
+        }
+
+        public Builder setMultithreading(int threads) {
+            if (threads < -2) throw new IllegalArgumentException("Multithreading must be -2 or higher");
+            if (threads >= -1) camera.threadsCount = threads;
+            else { // == -2
+                int cores = Runtime.getRuntime().availableProcessors() - SPARE_THREADS;
+                camera.threadsCount = cores <= 2 ? 1 : cores;
+            }
+            return this;
+        }
+
+        public Builder setDebugPrint(double interval) {
+            if (interval < 0)
+                throw new IllegalArgumentException("Interval value must be non-negative");
+            camera.printInterval = interval;
             return this;
         }
 
