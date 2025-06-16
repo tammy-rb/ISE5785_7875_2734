@@ -97,6 +97,11 @@ final class ImageWriter {
      * @param color  final color of the pixel
      */
     void writePixel(int xIndex, int yIndex, Color color) {
+        if (xIndex < 0 || xIndex >= nX || yIndex < 0 || yIndex >= nY) {
+            throw new IllegalArgumentException(
+                    "writePixel: (" + xIndex + "," + yIndex + ") out of bounds for image of size (" + nX + "," + nY + ")"
+            );
+        }
         image.setRGB(xIndex, yIndex, color.getColor().getRGB());
     }
 

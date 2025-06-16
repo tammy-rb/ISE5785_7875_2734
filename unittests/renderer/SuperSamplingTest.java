@@ -24,6 +24,8 @@ class SuperSamplingTest {
             .setViewPlaneDistance(1000)
             .setViewPlaneSize(200, 200)
             .setNumRays(3 * 3) // Supersampling: 3x3 rays per pixel
+            .setMultithreading(3)
+            .setDebugPrint(1)
             .setRayTracer(scene, RayTracerType.SIMPLE);
 
     private final Intersectable sphere = new Sphere(new Point(0, 0, -200), 60d)
