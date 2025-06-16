@@ -5,9 +5,11 @@ import primitives.*;
 import scene.Scene;
 import geometries.Intersectable.Intersection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static primitives.Util.alignZero;
+import static primitives.Util.isZero;
 
 /**
  * A simple implementation of the {@link RayTracerBase} class.
@@ -18,6 +20,7 @@ public class SimpleRayTracer extends RayTracerBase {
     private static final int MAX_CALC_COLOR_LEVEL = 10;
     private static final double MIN_CALC_COLOR_K = 0.001;
     private static final Double3 INITIAL_K = Double3.ONE;
+    private static final double DELTA = 0.1;
 
     public SimpleRayTracer(Scene scene) {
         super(scene);
@@ -238,24 +241,53 @@ public class SimpleRayTracer extends RayTracerBase {
      * @param intersection the point to test
      * @return the transparency coefficient
      */
-    private Double3 transparency( Intersection intersection) {
+    /**
+     * Calculates the transparency (ktr) along the path to the light.
+     *
+     * @param intersection the point to test
+     * @return the transparency coefficient
+     */
+    private Double3 transparency(Intersection intersection) {
+        // The current implementation of `pointToLight` and `nl` is not strictly necessary here,
+        // as `generateRays` from the light source should handle the direction correctly.
+        // However, the `DELTA` offset depends on `nl`, so it's kept.
         Vector pointToLight = intersection.l.scale(-1);
-        Ray shadowRay = new Ray(intersection.point, pointToLight, intersection.normal);
+        double nl = intersection.normal.dotProduct(pointToLight);
 
-        var intersections = scene.geometries.calculateIntersections(
-                shadowRay,
-                intersection.light.getDistance(intersection.point)
+        // Generate shadow rays from the intersection point, offset slightly to avoid self-intersection.
+        // The direction of the offset depends on whether the light is hitting the front or back face.
+        List<Ray> shadowRays = intersection.light.generateRays(
+                intersection.point.add(intersection.normal.scale(nl > 0 ? DELTA : -DELTA))
         );
 
-        if (intersections == null || intersections.isEmpty())
-            return Double3.ONE;
+        Double3 totalKtr = Double3.ZERO; // Initialize totalKtr to ZERO for summing up contributions
 
-        Double3 ktr = Double3.ONE;
-        for (Intersection shadowIntersection : intersections) {
-            ktr = ktr.product(shadowIntersection.material.kT);
+        for (Ray shadowRay : shadowRays) {
+            var intersections = scene.geometries.calculateIntersections(
+                    shadowRay,
+                    intersection.light.getDistance(intersection.point)
+            );
+
+            Double3 currentRayKtr = Double3.ONE; // ktr for the current shadow ray, starts as fully transparent
+
+            if (intersections != null && !intersections.isEmpty()) {
+                // If there are intersections, calculate the combined transparency
+                for (Intersection shadowIntersection : intersections) {
+                    currentRayKtr = currentRayKtr.product(shadowIntersection.material.kT);
+                    // If ktr becomes very small, we can potentially short-circuit, but usually
+                    // it's better to process all for accurate soft shadows.
+                    if (currentRayKtr.lowerThan(MIN_CALC_COLOR_K)) {
+                        break; // No need to continue if already fully opaque
+                    }
+                }
+            }
+            // Add the transparency of the current ray to the total sum
+            totalKtr = totalKtr.add(currentRayKtr);
         }
 
-        return ktr;
+        // Return the average transparency across all shadow rays
+        // Ensure that shadowRays.size() is not zero to prevent division by zero.
+        return shadowRays.isEmpty() ? Double3.ONE : totalKtr.reduce(shadowRays.size());
     }
 
     /**

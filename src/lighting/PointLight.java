@@ -89,7 +89,7 @@ public class PointLight extends Light implements LightSource {
         // Estimate number of rays based on light angular size
         double distance = p0.distance(position);
         double angle = Math.atan2(radius, distance); // in radians
-        int samplesPerAxis = Math.max(1, (int)(angle * 60)); // heuristic scale
+        int samplesPerAxis = Math.max(4, (int)(angle * 60)); // heuristic scale
         int numRays = samplesPerAxis * samplesPerAxis;
 
         this.setBlackboardOrientation(p0);
@@ -104,9 +104,16 @@ public class PointLight extends Light implements LightSource {
 
     protected void setBlackboardOrientation(Point p0) {
         Vector vTo = position.subtract(p0).normalize();
-        // Any arbitrary vector not parallel to vTo (e.g. (0, 1, 0))
-        Vector up = Math.abs(vTo.dotProduct(new Vector(0, 1, 0))) < 0.99 ? new Vector(0, 1, 0) : new Vector(0, 0, 1);
-        Vector vRight = vTo.crossProduct(up).normalize();
-        blackboard.setOrientation(vTo, vRight);
+
+        // Step 1: Choose arbitrary non-parallel vector
+        Vector arbitrary = Math.abs(vTo.dotProduct(new Vector(0, 1, 0))) < 0.99
+                ? new Vector(0, 1, 0)
+                : new Vector(1, 0, 0);
+
+        // Step 2: Compute orthogonal basis
+        Vector vRight = vTo.crossProduct(arbitrary).normalize();
+        Vector vUp = vRight.crossProduct(vTo).normalize(); // guaranteed orthogonal to vTo and vRight
+
+        blackboard.setOrientation(vTo, vRight); // assuming setOrientation(vTo, vRight) calculates vUp internally
     }
 }

@@ -133,5 +133,5 @@ public class AllEffectsTest {
                 .build()
                 .renderImage()
                 .writeToImage("CityscapeRender");
-    }
+}
 }

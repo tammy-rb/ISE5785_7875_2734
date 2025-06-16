@@ -9,152 +9,105 @@ import lighting.*;
 import primitives.*;
 import scene.Scene;
 
-public class SuperSamplingTest {
-    @Test
-    public void testGeometricShapes() {
-        Scene scene = new Scene("Geometric Shapes");
+/**
+ * Testing basic shadows and supersampling (soft shadows)
+ */
+class SuperSamplingTest {
 
-        // Set ambient light (low for dramatic shadows)
-        scene.setAmbientLight(new AmbientLight(new Color(20, 20, 20)));
+    SuperSamplingTest() { }
 
-        // Light gray background
-        scene.setBackground(new Color(180, 180, 180));
+    private final Scene scene = new Scene("SuperSampling Scene");
 
-        // === LIGHTING SETUP ===
+    private final Camera.Builder camera = Camera.getBuilder()
+            .setLocation(new Point(0, 0, 1000))
+            .setDirection(Point.ZERO, Vector.AXIS_Y)
+            .setViewPlaneDistance(1000)
+            .setViewPlaneSize(200, 200)
+            .setNumRays(3 * 3) // Supersampling: 3x3 rays per pixel
+            .setRayTracer(scene, RayTracerType.SIMPLE);
 
-        // Main directional light from upper left for dramatic shadows
+    private final Intersectable sphere = new Sphere(new Point(0, 0, -200), 60d)
+            .setEmission(new Color(BLUE))
+            .setMaterial(new Material().setKD(0.5).setKS(0.5).setShininess(30));
+
+    private final Material trMaterial = new Material().setKD(0.5).setKS(0.5).setShininess(30);
+
+    private void sphereTriangleHelper(String pictName, Triangle triangle, Point spotLocation) {
+        scene.geometries.add(
+                sphere,
+                triangle.setEmission(new Color(BLUE)).setMaterial(trMaterial)
+        );
+
+        scene.setAmbientLight(new AmbientLight(new Color(30, 30, 30)));
+
+        // Add directional light
         scene.lights.add(new DirectionalLight(
-                new Color(800, 800, 800), // bright white light
-                new Vector(-0.5, -0.7, -0.3).normalize() // from upper left
-        ));
+                new Color(100, 100, 100),
+                new Vector(0, 0, -1))
+        );
 
-        // Secondary fill light to soften shadows slightly
-        scene.lights.add(new DirectionalLight(
-                new Color(200, 200, 200), // softer light
-                new Vector(0.3, -0.2, -0.8).normalize()
-        ));
+        // Add spot light with radius for soft shadows
+        scene.lights.add(new SpotLight(
+                new Color(400, 240, 0),
+                spotLocation,
+                new Vector(1, 1, -3),
+                15 // radius > 0 enables soft shadows
+        ).setKL(1E-5).setKQ(1.5E-7));
 
-        // === MATERIALS ===
-
-        // Matte material for geometric shapes
-        Material matteMaterial = new Material()
-                .setKD(0.8)
-                .setKS(0.2)
-                .setShininess(30);
-
-        // Slightly more reflective material for variety
-        Material semiMatteMaterial = new Material()
-                .setKD(0.7)
-                .setKS(0.3)
-                .setShininess(50);
-
-        // === GEOMETRIC SHAPES ===
-
-        // Cube (using a box or multiple planes)
-        // Since you might not have a Box primitive, creating with planes
-        double cubeSize = 30;
-        Point cubeCenter = new Point(-40, -15, -20);
-
-        // Create cube faces
-        addCubeFaces(scene, cubeCenter, cubeSize, new Color(120, 120, 120), matteMaterial);
-
-        // Cylinder
-        scene.geometries.add(new Cylinder(12,
-                new Ray(new Point(30, -30, -10), new Vector(0, 1, 0)),
-                50)
-                .setEmission(new Color(100, 100, 100))
-                .setMaterial(semiMatteMaterial));
-
-        // Sphere
-        scene.geometries.add(new Sphere(new Point(-10, -20, 10), 15)
-                .setEmission(new Color(140, 140, 140))
-                .setMaterial(matteMaterial));
-
-        // === GROUND PLANE ===
-        // Large plane for ground with subtle texture
-        scene.geometries.add(new Plane(
-                new Point(0, -45, 0),
-                new Vector(0, 1, 0))
-                .setEmission(new Color(160, 160, 160))
-                .setMaterial(new Material()
-                        .setKD(0.9)
-                        .setKS(0.1)
-                        .setShininess(20)));
-
-        // === CAMERA SETUP ===
-        Camera.Builder cameraBuilder = Camera.getBuilder()
-                .setRayTracer(scene, RayTracerType.SIMPLE);
-
-        cameraBuilder
-                .setLocation(new Point(0, 10, 100))
-                .setDirection(new Point(0, -10, 0), new Vector(0, 1, 0))
-                .setViewPlaneDistance(100)
-                .setResolution(800, 600)
-                .setViewPlaneSize(120, 90)
-
+        camera
+                .setResolution(400, 400)
                 .build()
                 .renderImage()
-                .writeToImage("geometricShapes");
+                .writeToImage(pictName);
     }
 
-    /**
-     * Helper method to create cube faces using planes
-     */
-    private void addCubeFaces(Scene scene, Point center, double size, Color color, Material material) {
-        double half = size / 2;
+    @Test
+    void sphereTriangleInitial() {
+        sphereTriangleHelper("superSampling_SphereTriangle_Initial",
+                new Triangle(
+                        new Point(-70, -40, 0),
+                        new Point(-40, -70, 0),
+                        new Point(-68, -68, -4)),
+                new Point(-100, -100, 200));
+    }
 
-        // Front face
-        scene.geometries.add(new Polygon(
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() - half, center.get_xyz().d3() + half),
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() - half, center.get_xyz().d3() + half),
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() + half, center.get_xyz().d3() + half),
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() + half, center.get_xyz().d3() + half))
-                .setEmission(color)
-                .setMaterial(material));
+    @Test
+    void sphereTriangleMove1() {
+        sphereTriangleHelper("superSampling_SphereTriangle_Move1",
+                new Triangle(
+                        new Point(-60, -30, 0),
+                        new Point(-30, -60, 0),
+                        new Point(-58, -58, -4)),
+                new Point(-100, -100, 200));
+    }
 
-        // Back face
-        scene.geometries.add(new Polygon(
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() - half, center.get_xyz().d3() - half),
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() - half, center.get_xyz().d3() - half),
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() + half, center.get_xyz().d3() - half),
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() + half, center.get_xyz().d3() - half))
-                .setEmission(color)
-                .setMaterial(material));
+    @Test
+    void sphereTriangleMove2() {
+        sphereTriangleHelper("superSampling_SphereTriangle_Move2",
+                new Triangle(
+                        new Point(-50, -20, 0),
+                        new Point(-20, -50, 0),
+                        new Point(-48, -48, 4)),
+                new Point(-100, -100, 200));
+    }
 
-        // Left face
-        scene.geometries.add(new Polygon(
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() - half, center.get_xyz().d3() - half),
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() - half, center.get_xyz().d3() + half),
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() + half, center.get_xyz().d3() + half),
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() + half, center.get_xyz().d3() - half))
-                .setEmission(color)
-                .setMaterial(material));
+    @Test
+    void sphereTriangleSpot1() {
+        sphereTriangleHelper("superSampling_SphereTriangle_Spot1",
+                new Triangle(
+                        new Point(-70, -40, 0),
+                        new Point(-40, -70, 0),
+                        new Point(-68, -68, -4)),
+                new Point(-90, -90, 140));
+    }
 
-        // Right face
-        scene.geometries.add(new Polygon(
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() - half, center.get_xyz().d3() + half),
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() - half, center.get_xyz().d3() - half),
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() + half, center.get_xyz().d3() - half),
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() + half, center.get_xyz().d3() + half))
-                .setEmission(color)
-                .setMaterial(material));
-
-        // Top face
-        scene.geometries.add(new Polygon(
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() + half, center.get_xyz().d3() + half),
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() + half, center.get_xyz().d3() + half),
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() + half, center.get_xyz().d3() - half),
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() + half, center.get_xyz().d3() - half))
-                .setEmission(color)
-                .setMaterial(material));
-
-        // Bottom face
-        scene.geometries.add(new Polygon(
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() - half, center.get_xyz().d3() - half),
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() - half, center.get_xyz().d3() - half),
-                new Point(center.get_xyz().d1() + half, center.get_xyz().d2() - half, center.get_xyz().d3() + half),
-                new Point(center.get_xyz().d1() - half, center.get_xyz().d2() - half, center.get_xyz().d3() + half))
-                .setEmission(color)
-                .setMaterial(material));
-}
+    @Test
+    void sphereTriangleSpot2() {
+        sphereTriangleHelper("superSampling_SphereTriangle_Spot2",
+                new Triangle(
+                        new Point(-70, -40, 0),
+                        new Point(-40, -70, 0),
+                        new Point(-68, -68, -4)),
+                new Point(-77, -77, 80));
+    }
 }

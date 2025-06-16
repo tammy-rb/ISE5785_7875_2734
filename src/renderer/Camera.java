@@ -33,7 +33,7 @@ public class Camera implements Cloneable {
     private static final int SPARE_THREADS = 2;
     private double printInterval = 0;
     private PixelManager pixelManager;
-    private Blackboard blackboard;
+    private Blackboard blackboard = new RectangleBlackboard();
     private int numRays = 1;
 
     private Camera() {}
@@ -106,7 +106,7 @@ public class Camera implements Cloneable {
             for (Ray ray : rays) {
                 color = color.add(rayTracer.traceRay(ray));
             }
-            imageWriter.writePixel(j, i, color.reduce(rays.size()));
+            imageWriter.writePixel(j, i, color.reduce(numRays));
         }
         pixelManager.pixelDone();
     }
@@ -232,14 +232,6 @@ public class Camera implements Cloneable {
             if (interval < 0)
                 throw new IllegalArgumentException("Interval value must be non-negative");
             camera.printInterval = interval;
-            return this;
-        }
-
-        public Builder setBlackboard(Blackboard blackboard) {
-            if (!(blackboard instanceof RectangleBlackboard)) {
-                throw new IllegalArgumentException("Only RectangleBlackboard is supported");
-            }
-            camera.blackboard = blackboard;
             return this;
         }
 

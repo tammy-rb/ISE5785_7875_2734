@@ -59,9 +59,17 @@ public class SpotLight extends PointLight{
 
     @Override
     protected void setBlackboardOrientation(Point p0) {
-        Vector vTo = direction.normalize();        // Any arbitrary vector not parallel to vTo (e.g. (0, 1, 0))
-        Vector up = Math.abs(vTo.dotProduct(new Vector(0, 1, 0))) < 0.99 ? new Vector(0, 1, 0) : new Vector(0, 0, 1);
-        Vector vRight = vTo.crossProduct(up).normalize();
-        blackboard.setOrientation(vTo, vRight);
+        Vector vTo = direction.normalize();
+
+        // Step 1: Choose arbitrary non-parallel vector
+        Vector arbitrary = Math.abs(vTo.dotProduct(new Vector(0, 1, 0))) < 0.99
+                ? new Vector(0, 1, 0)
+                : new Vector(1, 0, 0);
+
+        // Step 2: Compute orthogonal basis
+        Vector vRight = vTo.crossProduct(arbitrary).normalize();
+        Vector vUp = vRight.crossProduct(vTo).normalize(); // guaranteed orthogonal to vTo and vRight
+
+        blackboard.setOrientation(vTo, vRight); // assuming setOrientation(vTo, vRight) calculates vUp internally
     }
 }
