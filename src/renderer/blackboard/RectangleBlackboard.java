@@ -6,9 +6,7 @@ import primitives.Ray;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.MissingResourceException;
 
-import static primitives.Util.isZero;
 
 public class RectangleBlackboard extends Blackboard {
     @Override

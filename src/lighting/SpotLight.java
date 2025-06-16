@@ -12,6 +12,16 @@ import static java.lang.Math.max;
 import static java.lang.Math.pow;
 import static primitives.Util.alignZero;
 
+/**
+ * The {@code SpotLight} class represents a light source that behaves like a spotlight.
+ * It emits light in a specific direction from a given position, and the intensity
+ * falls off according to the angle between the direction to the point and the spotlight's direction.
+ * <p>
+ * This class extends {@link PointLight}, adding the concept of directionality and narrow beam control.
+ * The beam narrowing is controlled via a power exponent that affects the dot product-based intensity falloff.
+ * <p>
+ * Supports optional soft shadow simulation using a blackboard-based sampling approach when a radius is provided.
+ */
 public class SpotLight extends PointLight{
     private final Vector direction;
     private double narrowBeam = 1; // default: no narrowing

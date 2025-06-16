@@ -10,6 +10,10 @@ import primitives.Ray;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Represents a point light source with optional radius for area lighting.
+ * Supports attenuation based on distance and soft shadows via multiple rays.
+ */
 public class PointLight extends Light implements LightSource {
 
     private static final double DEFAULT_RADIUS = 0.0;
@@ -21,7 +25,14 @@ public class PointLight extends Light implements LightSource {
     private double kQ = 0;
     protected Blackboard blackboard;
 
-    // Constructor WITH radius
+    /**
+     * Constructs a PointLight with a given intensity, position, and radius.
+     * If radius > 0, enables area lighting and soft shadows.
+     *
+     * @param intensity the color intensity of the light
+     * @param position  the position of the light source
+     * @param radius    the radius of the light's emitting area
+     */
     public PointLight(Color intensity, Point position, double radius) {
         super(intensity);
         this.position = position;
@@ -33,21 +44,44 @@ public class PointLight extends Light implements LightSource {
         }
     }
 
-    // Constructor WITHOUT radius – uses default
+    /**
+     * Constructs a pure point light (no soft shadows).
+     *
+     * @param intensity the color intensity of the light
+     * @param position  the position of the light source
+     */
     public PointLight(Color intensity, Point position) {
         this(intensity, position, DEFAULT_RADIUS);
     }
 
+    /**
+     * Sets the constant attenuation factor.
+     *
+     * @param kC the constant coefficient
+     * @return this light instance (for chaining)
+     */
     public PointLight setKC(double kC) {
         this.kC = kC;
         return this;
     }
 
+    /**
+     * Sets the linear attenuation factor.
+     *
+     * @param kL the linear coefficient
+     * @return this light instance (for chaining)
+     */
     public PointLight setKL(double kL) {
         this.kL = kL;
         return this;
     }
 
+    /**
+     * Sets the quadratic attenuation factor.
+     *
+     * @param kQ the quadratic coefficient
+     * @return this light instance (for chaining)
+     */
     public PointLight setKQ(double kQ) {
         this.kQ = kQ;
         return this;
@@ -70,26 +104,23 @@ public class PointLight extends Light implements LightSource {
     }
 
     /**
-     * Generates a list of shadow rays toward this light source.
-     * The number of rays is automatically estimated based on light radius and distance.
-     * If the light has no area (point light), returns a single ray.
+     * Generates a list of rays from the given point toward this light source.
+     * If radius > 0, returns multiple rays for soft shadows. Otherwise, returns a single ray.
      *
-     * @param p0 the point in the scene
-     * @return list of rays
+     * @param p0 the origin point for the rays
+     * @return list of shadow rays toward the light
      */
     public List<Ray> generateRays(Point p0) {
         List<Ray> rays = new LinkedList<>();
 
-        // No soft shadows if radius is zero
         if (blackboard == null || radius == 0.0) {
             rays.add(new Ray(p0, position.subtract(p0)));
             return rays;
         }
 
-        // Estimate number of rays based on light angular size
         double distance = p0.distance(position);
-        double angle = Math.atan2(radius, distance); // in radians
-        int samplesPerAxis = Math.max(4, (int)(angle * 60)); // heuristic scale
+        double angle = Math.atan2(radius, distance);
+        int samplesPerAxis = Math.max(4, (int)(angle * 60)); // heuristic
         int numRays = samplesPerAxis * samplesPerAxis;
 
         this.setBlackboardOrientation(p0);
@@ -98,22 +129,24 @@ public class PointLight extends Light implements LightSource {
                 .setCenter(position)
                 .setNumRays(numRays);
 
-        rays = blackboard.constructRays(p0);
-        return rays;
+        return blackboard.constructRays(p0);
     }
 
+    /**
+     * Sets the orientation of the blackboard used for area light sampling.
+     * Calculates orthogonal vectors based on the view direction from the point to the light.
+     *
+     * @param p0 the point from which the light is viewed
+     */
     protected void setBlackboardOrientation(Point p0) {
         Vector vTo = position.subtract(p0).normalize();
-
-        // Step 1: Choose arbitrary non-parallel vector
         Vector arbitrary = Math.abs(vTo.dotProduct(new Vector(0, 1, 0))) < 0.99
                 ? new Vector(0, 1, 0)
                 : new Vector(1, 0, 0);
 
-        // Step 2: Compute orthogonal basis
         Vector vRight = vTo.crossProduct(arbitrary).normalize();
-        Vector vUp = vRight.crossProduct(vTo).normalize(); // guaranteed orthogonal to vTo and vRight
+        Vector vUp = vRight.crossProduct(vTo).normalize();
 
-        blackboard.setOrientation(vTo, vRight); // assuming setOrientation(vTo, vRight) calculates vUp internally
+        blackboard.setOrientation(vTo, vRight);
     }
 }

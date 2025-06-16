@@ -248,45 +248,28 @@ public class SimpleRayTracer extends RayTracerBase {
      * @return the transparency coefficient
      */
     private Double3 transparency(Intersection intersection) {
-        // The current implementation of `pointToLight` and `nl` is not strictly necessary here,
-        // as `generateRays` from the light source should handle the direction correctly.
-        // However, the `DELTA` offset depends on `nl`, so it's kept.
         Vector pointToLight = intersection.l.scale(-1);
         double nl = intersection.normal.dotProduct(pointToLight);
-
-        // Generate shadow rays from the intersection point, offset slightly to avoid self-intersection.
-        // The direction of the offset depends on whether the light is hitting the front or back face.
         List<Ray> shadowRays = intersection.light.generateRays(
                 intersection.point.add(intersection.normal.scale(nl > 0 ? DELTA : -DELTA))
         );
-
-        Double3 totalKtr = Double3.ZERO; // Initialize totalKtr to ZERO for summing up contributions
-
+        Double3 totalKtr = Double3.ZERO;
         for (Ray shadowRay : shadowRays) {
             var intersections = scene.geometries.calculateIntersections(
                     shadowRay,
                     intersection.light.getDistance(intersection.point)
             );
-
-            Double3 currentRayKtr = Double3.ONE; // ktr for the current shadow ray, starts as fully transparent
-
+            Double3 currentRayKtr = Double3.ONE;
             if (intersections != null && !intersections.isEmpty()) {
-                // If there are intersections, calculate the combined transparency
                 for (Intersection shadowIntersection : intersections) {
                     currentRayKtr = currentRayKtr.product(shadowIntersection.material.kT);
-                    // If ktr becomes very small, we can potentially short-circuit, but usually
-                    // it's better to process all for accurate soft shadows.
                     if (currentRayKtr.lowerThan(MIN_CALC_COLOR_K)) {
-                        break; // No need to continue if already fully opaque
+                        break;
                     }
                 }
             }
-            // Add the transparency of the current ray to the total sum
             totalKtr = totalKtr.add(currentRayKtr);
         }
-
-        // Return the average transparency across all shadow rays
-        // Ensure that shadowRays.size() is not zero to prevent division by zero.
         return shadowRays.isEmpty() ? Double3.ONE : totalKtr.reduce(shadowRays.size());
     }
 

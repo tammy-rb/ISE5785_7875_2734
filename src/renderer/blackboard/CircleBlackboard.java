@@ -6,9 +6,6 @@ import primitives.Ray;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.MissingResourceException;
-
-import static primitives.Util.isZero;
 
 public class CircleBlackboard extends Blackboard {
     private double radius;
@@ -44,8 +41,10 @@ public class CircleBlackboard extends Blackboard {
             rays.add(new Ray(p0, center.subtract(p0)));
             return rays;
         }
-
+        int originalNumRays = numRays;
+        setNumRays((int)(numRays * 1.3));
         List<Point> points = constructPoints();
+        setNumRays(originalNumRays);
         List<Ray> rays = new LinkedList<>();
         for (Point p : points) {
             double dx = p.subtract(center).dotProduct(vRight);

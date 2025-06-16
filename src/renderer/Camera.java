@@ -15,6 +15,13 @@ import java.util.stream.IntStream;
 
 import static primitives.Util.*;
 
+/**
+ * The {@code Camera} class represents a virtual camera in a 3D scene used for ray tracing.
+ * It is responsible for generating rays through each pixel of the view plane,
+ * tracing their color using a ray tracer, and writing the resulting image.
+ * <p>
+ * The camera supports multithreading, super sampling (via blackboards), and configurable resolution and orientation.
+ */
 public class Camera implements Cloneable {
 
     private Point p0;
@@ -63,11 +70,22 @@ public class Camera implements Cloneable {
      * @return A {@link Ray} from the camera through the specified pixel.
      */
     public Ray constructRay(int nX, int nY, int j, int i) {
-        Point p = constructPixelCenter(j, i);
+        double rY = viewPlaneHeight / nY;
+        double rX = viewPlaneWidth / nX;
+        double yi = -(i - (double) (nY - 1) / 2) * rY;
+        double xj = (j - (double) (nX - 1) / 2) * rX;
+        Point p = viewPlaneCenter;
+        if (!isZero(xj)) p = p.add(vRight.scale(xj));
+        if (!isZero(yi)) p = p.add(vUp.scale(yi));
         Vector v = p.subtract(p0);
         return new Ray(p0, v);
     }
 
+    /**
+     * Renders the image without using multithreading.
+     *
+     * @return This camera instance.
+     */
     public Camera renderImageNoThreads() {
         for (int j = 0; j < nX; j++) {
             for (int i = 0; i < nY; i++)
@@ -77,6 +95,13 @@ public class Camera implements Cloneable {
         return this;
     }
 
+    /**
+     * Draws a grid on the rendered image with the specified interval and color.
+     *
+     * @param interval Distance between grid lines in pixels.
+     * @param color    Color of the grid lines.
+     * @return This camera instance.
+     */
     public Camera printGrid(int interval, Color color) {
         for (int i = 0; i < imageWriter.nX(); i++)
             for (int j = 0; j < imageWriter.nY(); j++)
@@ -84,7 +109,12 @@ public class Camera implements Cloneable {
                     imageWriter.writePixel(i, j, color);
         return this;
     }
-
+    /**
+     * Writes the final rendered image to disk with the specified name.
+     *
+     * @param imageName Name of the output file.
+     * @return This camera instance.
+     */
     public Camera writeToImage(String imageName) {
         this.imageWriter.writeToImage(imageName);
         return this;
@@ -120,6 +150,7 @@ public class Camera implements Cloneable {
         }
     }
 
+
     private Camera renderImageRawThreads() {
         var threads = new LinkedList<Thread>();
         while (threadsCount-- > 0)
@@ -135,6 +166,11 @@ public class Camera implements Cloneable {
         return this;
     }
 
+    /**
+     * Renders the image using a parallel stream-based approach.
+     *
+     * @return This camera instance.
+     */
     public Camera renderImageStream() {
         IntStream.range(0, nY).parallel()
                 .forEach(i -> IntStream.range(0, nX).parallel()
@@ -142,6 +178,16 @@ public class Camera implements Cloneable {
         return this;
     }
 
+    /**
+     * Renders the image based on the selected multithreading configuration.
+     * <ul>
+     *     <li>threadsCount = 0 → single-threaded</li>
+     *     <li>threadsCount = -1 → parallel streams</li>
+     *     <li>threadsCount > 0 → manual multithreading</li>
+     * </ul>
+     *
+     * @return This camera instance.
+     */
     public Camera renderImage() {
         pixelManager = new PixelManager(nY, nX, printInterval);
         return switch (threadsCount) {

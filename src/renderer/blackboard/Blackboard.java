@@ -6,9 +6,18 @@ import primitives.Ray;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.MissingResourceException;
 
 import static primitives.Util.isZero;
+
+/**
+ * The {@code Blackboard} abstract class provides a template for sampling points
+ * on a 2D surface (e.g., rectangle or circle) to generate multiple rays from a camera
+ * toward a pixel area, enabling effects like soft shadows, depth of field, and anti-aliasing.
+ * <p>
+ * It defines the orientation, center, size, and number of rays, and includes common logic
+ * for generating jittered sample points. Subclasses must implement {@link #constructRays(Point)}
+ * to define how rays are generated from a given origin point {@code p0}.
+ */
 public abstract class Blackboard {
     protected Vector vTo;
     protected Vector vRight;
