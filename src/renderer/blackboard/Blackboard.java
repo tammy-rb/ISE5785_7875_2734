@@ -4,6 +4,7 @@ import primitives.Point;
 import primitives.Vector;
 import primitives.Ray;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,11 +53,13 @@ public abstract class Blackboard {
         return this;
     }
 
+
     /**
      * Constructs jittered sampling points inside a rectangular area.
+     *
      * @return list of points in the rectangle area
      */
-    protected List<Point> constructPoints() {
+    public List<Point> constructPoints() {
         List<Point> points = new LinkedList<>();
 
         int sqrt = (int) Math.sqrt(numRays);

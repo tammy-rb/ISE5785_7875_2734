@@ -11,12 +11,6 @@ import java.util.List;
 public class RectangleBlackboard extends Blackboard {
     @Override
     public List<Ray> constructRays(Point cameraPosition) {
-        if (numRays == 1) {
-            List<Ray> rays = new LinkedList<>();
-            rays.add(new Ray(cameraPosition, center.subtract(cameraPosition)));
-            return rays;
-        }
-
         List<Point> points = constructPoints();
         List<Ray> rays = new LinkedList<>();
         for (Point p : points) {
@@ -42,6 +36,7 @@ public class RectangleBlackboard extends Blackboard {
         super.setWidthHeight(width, height);
         return this;
     }
+
     @Override
     public RectangleBlackboard setNumRays(int numRays) {
         super.setNumRays(numRays);

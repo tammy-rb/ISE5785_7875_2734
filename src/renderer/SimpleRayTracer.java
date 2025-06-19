@@ -5,11 +5,9 @@ import primitives.*;
 import scene.Scene;
 import geometries.Intersectable.Intersection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static primitives.Util.alignZero;
-import static primitives.Util.isZero;
 
 /**
  * A simple implementation of the {@link RayTracerBase} class.
