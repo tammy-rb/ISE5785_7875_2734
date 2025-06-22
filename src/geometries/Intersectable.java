@@ -1,10 +1,7 @@
 package geometries;
 
 import lighting.LightSource;
-import primitives.Material;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -16,6 +13,24 @@ import java.util.Objects;
  * between the ray and the geometric shape.
  */
 public abstract class Intersectable {
+
+    private AABB boundingBox;
+
+    protected final void createBoundingBox() {
+        if (boundingBox == null) {
+            boundingBox = createBoundingBoxHelper();
+        }
+    }
+
+    public AABB getBoundingBox() {
+        return boundingBox;
+    }
+
+    public void setBoundingBox(AABB boundingBox) {
+        this.boundingBox = boundingBox;
+    }
+
+    protected abstract AABB createBoundingBoxHelper();
 
     public static class Intersection {
         public final Geometry geometry;
@@ -66,8 +81,11 @@ public abstract class Intersectable {
      * the geometry, or {@code null} if there are no intersections
      */
     public final List<Point> findIntersections(Ray ray) {
-        var list = calculateIntersections(ray);
-        return list == null ? null : list.stream().map(intersection -> intersection.point).toList();
+        if (boundingBox != null && isBoundingBoxIntersected(ray)) {
+            var list = calculateIntersections(ray);
+            return list == null ? null : list.stream().map(intersection -> intersection.point).toList();
+        }
+        return null;
     }
 
     /**
@@ -103,4 +121,9 @@ public abstract class Intersectable {
      * @return a list of {@link Intersection} objects, or {@code null} if none are found
      */
     protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance);
+
+    // check if a ray intersect the AABB box.
+    protected boolean isBoundingBoxIntersected(Ray ray){
+        return true;
+    };
 }

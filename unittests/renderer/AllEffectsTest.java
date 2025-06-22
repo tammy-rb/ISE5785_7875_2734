@@ -17,7 +17,7 @@ public class AllEffectsTest {
 
     AllEffectsTest() {}
 
-    private final Scene scene = new Scene("Cityscape");
+    private final Scene scene = new Scene("Cityscape", true);
     private final Camera.Builder cameraBuilder = Camera.getBuilder()
             .setRayTracer(scene, RayTracerType.SIMPLE);
 
@@ -28,6 +28,7 @@ public class AllEffectsTest {
      */
     @Test
     void TestAllEffects() {
+
         scene.setAmbientLight(new AmbientLight(new Color(20, 20, 20)));
 
         scene.geometries.add(

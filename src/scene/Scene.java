@@ -19,12 +19,17 @@ public class Scene {
 
     public AmbientLight ambientLight = AmbientLight.NONE;
 
-    public Geometries geometries = new Geometries();
+    public Geometries geometries;
 
     public List<LightSource> lights = new LinkedList<LightSource>();
 
-    public Scene(String sceneName) {
+    public Scene(String sceneName, boolean enableCBR) {
         name = sceneName;
+        this.geometries = new Geometries(enableCBR);
+    }
+
+    public Scene(String sceneName) {
+        this(sceneName, false);
     }
 
     /**
