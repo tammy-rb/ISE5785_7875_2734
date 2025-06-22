@@ -273,6 +273,26 @@ public class SimpleRayTracer extends RayTracerBase {
         return shadowRays.isEmpty() ? Double3.ONE : totalKtr.reduce(shadowRays.size());
     }
 
+//    private Double3 transparency(Intersection intersection) {
+//        Vector pointToLight = intersection.l.scale(-1);
+//        Ray shadowRay = new Ray(intersection.point, pointToLight, intersection.normal);
+//
+//        var intersections = scene.geometries.calculateIntersections(
+//                shadowRay,
+//                intersection.light.getDistance(intersection.point)
+//        );
+//
+//        if (intersections == null || intersections.isEmpty())
+//            return Double3.ONE;
+//
+//        Double3 ktr = Double3.ONE;
+//        for (Intersection shadowIntersection : intersections) {
+//            ktr = ktr.product(shadowIntersection.material.kT);
+//        }
+//
+//        return ktr;
+//    }
+
     /**
      * Finds the closest intersection point of a given ray with the scene geometries.
      *

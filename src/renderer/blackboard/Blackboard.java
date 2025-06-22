@@ -53,23 +53,29 @@ public abstract class Blackboard {
     }
 
     /**
-     * Constructs jittered sampling points inside a rectangular area.
+     * Constructs jittered sampling points inside a rectangular area using stratified sampling.
      * @return list of points in the rectangle area
      */
     protected List<Point> constructPoints() {
         List<Point> points = new LinkedList<>();
 
-        int sqrt = (int) Math.sqrt(numRays);
-        for (int i = 0; i < sqrt; i++) {
-            for (int j = 0; j < sqrt; j++) {
-                double dx = (j + Math.random()) * width / sqrt - width / 2;
-                double dy = (i + Math.random()) * height / sqrt - height / 2;
+        int gridSize = (int) Math.ceil(Math.sqrt(numRays));
+        double cellWidth = width / gridSize;
+        double cellHeight = height / gridSize;
+
+        for (int i = 0; i < gridSize && points.size() < numRays; i++) {
+            for (int j = 0; j < gridSize && points.size() < numRays; j++) {
+                double dx = (j + 0.5 + (Math.random() - 0.5)) * cellWidth - width / 2;
+                double dy = (i + 0.5 + (Math.random() - 0.5)) * cellHeight - height / 2;
+
                 Point p = center.add(vRight.scale(dx)).add(vUp.scale(dy));
                 points.add(p);
             }
         }
+
         return points;
     }
+
 
     public abstract List<Ray> constructRays(Point p0);
 }

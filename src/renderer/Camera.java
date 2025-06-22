@@ -40,7 +40,6 @@ public class Camera implements Cloneable {
     private static final int SPARE_THREADS = 2;
     private double printInterval = 0;
     private PixelManager pixelManager;
-    private Blackboard blackboard = new RectangleBlackboard();
     private int numRays = 1;
 
     private Camera() {}
@@ -49,7 +48,7 @@ public class Camera implements Cloneable {
         return new Builder();
     }
 
-    private Point constructPixelCenter(int j, int i) {
+    private Point constructPixelCenter(int nX, int nY, int j, int i) {
         double rY = viewPlaneHeight / nY;
         double rX = viewPlaneWidth / nX;
         double yi = -(i - (double) (nY - 1) / 2) * rY;
@@ -121,25 +120,31 @@ public class Camera implements Cloneable {
     }
 
     private void castRay(int j, int i) {
-        Point pixelCenter = constructPixelCenter(j, i);
-        if (numRays == 1 || blackboard == null) {
+        Point pixelCenter = constructPixelCenter(nX, nY, j, i);
+
+        if (numRays == 1 ) {
             Ray ray = new Ray(p0, pixelCenter.subtract(p0));
             Color intensity = rayTracer.traceRay(ray);
             imageWriter.writePixel(j, i, intensity);
         } else {
-            blackboard.setCenter(pixelCenter)
+            // Create a fresh blackboard instance for thread safety
+            Blackboard localBoard = new RectangleBlackboard()
+                    .setCenter(pixelCenter)
                     .setOrientation(vTo, vRight)
                     .setWidthHeight(viewPlaneWidth / nX, viewPlaneHeight / nY)
                     .setNumRays(numRays);
-            List<Ray> rays = blackboard.constructRays(p0);
+
+            List<Ray> rays = localBoard.constructRays(p0);
             Color color = Color.BLACK;
             for (Ray ray : rays) {
                 color = color.add(rayTracer.traceRay(ray));
             }
-            imageWriter.writePixel(j, i, color.reduce(numRays));
+            imageWriter.writePixel(j, i, color.reduce(rays.size()));
         }
-        pixelManager.pixelDone();
+
+        if (pixelManager != null) pixelManager.pixelDone();
     }
+
 
     @Override
     public Camera clone() {

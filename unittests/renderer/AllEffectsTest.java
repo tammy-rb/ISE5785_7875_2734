@@ -132,6 +132,7 @@ public class AllEffectsTest {
                 .setViewPlaneSize(350, 200)
                 .setMultithreading(3)
                 .setDebugPrint(1)
+                .setNumRays(3*3)
                 .build()
                 .renderImage()
                 .writeToImage("CityscapeRender");

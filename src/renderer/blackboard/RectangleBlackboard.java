@@ -7,20 +7,23 @@ import primitives.Ray;
 import java.util.LinkedList;
 import java.util.List;
 
-
 public class RectangleBlackboard extends Blackboard {
     @Override
-    public List<Ray> constructRays(Point cameraPosition) {
+    public List<Ray> constructRays(Point p0) {
+        if (numRays <= 0) {
+            return new LinkedList<>();
+        }
+
         if (numRays == 1) {
             List<Ray> rays = new LinkedList<>();
-            rays.add(new Ray(cameraPosition, center.subtract(cameraPosition)));
+            rays.add(new Ray(p0, center.subtract(p0)));
             return rays;
         }
 
         List<Point> points = constructPoints();
         List<Ray> rays = new LinkedList<>();
         for (Point p : points) {
-            rays.add(new Ray(cameraPosition, p.subtract(cameraPosition)));
+            rays.add(new Ray(p0, p.subtract(p0)));
         }
         return rays;
     }
@@ -42,6 +45,7 @@ public class RectangleBlackboard extends Blackboard {
         super.setWidthHeight(width, height);
         return this;
     }
+
     @Override
     public RectangleBlackboard setNumRays(int numRays) {
         super.setNumRays(numRays);

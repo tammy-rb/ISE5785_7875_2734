@@ -23,7 +23,7 @@ class SuperSamplingTest {
             .setDirection(Point.ZERO, Vector.AXIS_Y)
             .setViewPlaneDistance(1000)
             .setViewPlaneSize(200, 200)
-            .setNumRays(3 * 3) // Supersampling: 3x3 rays per pixel
+            .setNumRays(5 * 5) // Supersampling: 3x3 rays per pixel
             .setMultithreading(3)
             .setDebugPrint(1)
             .setRayTracer(scene, RayTracerType.SIMPLE);
