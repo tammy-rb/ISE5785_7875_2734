@@ -17,10 +17,6 @@ import scene.XMLSceneFactory;
  * @author Dan
  */
 public class RenderTests {
-    /**
-     * Default constructor to satisfy JavaDoc generator
-     */
-    public RenderTests() { /* to satisfy JavaDoc generator */ }
 
     /**
      * Camera builder of the tests

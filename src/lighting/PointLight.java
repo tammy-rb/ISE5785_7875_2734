@@ -120,7 +120,7 @@ public class PointLight extends Light implements LightSource {
 
         double distance = p0.distance(position);
         double angle = Math.atan2(radius, distance);
-        int samplesPerAxis = Math.max(4, (int)(angle * 60)); // heuristic
+        int samplesPerAxis = Math.max(4, (int) (angle * 60)); // heuristic
         int numRays = samplesPerAxis * samplesPerAxis;
 
         this.setBlackboardOrientation(p0);
@@ -145,7 +145,6 @@ public class PointLight extends Light implements LightSource {
                 : new Vector(1, 0, 0);
 
         Vector vRight = vTo.crossProduct(arbitrary).normalize();
-        Vector vUp = vRight.crossProduct(vTo).normalize();
 
         blackboard.setOrientation(vTo, vRight);
     }

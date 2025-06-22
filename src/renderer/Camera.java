@@ -42,7 +42,8 @@ public class Camera implements Cloneable {
     private PixelManager pixelManager;
     private int numRays = 1;
 
-    private Camera() {}
+    private Camera() {
+    }
 
     public static Builder getBuilder() {
         return new Builder();
@@ -108,6 +109,7 @@ public class Camera implements Cloneable {
                     imageWriter.writePixel(i, j, color);
         return this;
     }
+
     /**
      * Writes the final rendered image to disk with the specified name.
      *
@@ -164,10 +166,12 @@ public class Camera implements Cloneable {
                 while ((pixel = pixelManager.nextPixel()) != null)
                     castRay(pixel.col(), pixel.row());
             }));
-        for (var thread : threads) thread.start();
+        for (var thread : threads)
+            thread.start();
         try {
             for (var thread : threads) thread.join();
-        } catch (InterruptedException ignore) {}
+        } catch (InterruptedException ignore) {
+        }
         return this;
     }
 
