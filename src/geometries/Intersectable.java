@@ -81,7 +81,7 @@ public abstract class Intersectable {
      * the geometry, or {@code null} if there are no intersections
      */
     public final List<Point> findIntersections(Ray ray) {
-        if (boundingBox == null || isBoundingBoxIntersected(ray)){
+        if (boundingBox == null || isBoundingBoxIntersected(ray)) {
             var list = calculateIntersections(ray);
             return list == null ? null : list.stream().map(intersection -> intersection.point).toList();
         }
@@ -123,7 +123,7 @@ public abstract class Intersectable {
     protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance);
 
     // check if a ray intersect the AABB box.
-    protected boolean isBoundingBoxIntersected(Ray ray){
+    protected boolean isBoundingBoxIntersected(Ray ray) {
         return true;
-    };
+    }
 }

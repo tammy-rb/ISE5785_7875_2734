@@ -52,8 +52,8 @@ public class Geometries extends Intersectable {
     /**
      * Constructs a Geometries object with one or more geometries and CBR flag.
      *
-     * @param enableCBR   Whether to enable coarse bounding rectangle optimization
-     * @param geometries  Intersectable geometries to add
+     * @param enableCBR  Whether to enable coarse bounding rectangle optimization
+     * @param geometries Intersectable geometries to add
      */
     public Geometries(boolean enableCBR, Intersectable... geometries) {
         this.enableCBR = enableCBR;
@@ -79,14 +79,14 @@ public class Geometries extends Intersectable {
      *         of this {@code Geometries} object using the {@code surround()} method.</li>
      *     <li>The geometry is then added to the internal list.</li>
      * </ul>
-     *
+     * <p>
      * This method ensures that the {@code Geometries} object's bounding box is always up-to-date
      * with respect to its contents.
      *
      * @param geometries One or more {@link Intersectable} geometries to add
      */
     public void add(Intersectable... geometries) {
-        if (enableCBR){
+        if (enableCBR) {
             for (Intersectable geometry : geometries) {
                 if (geometry.getBoundingBox() == null) {
                     geometry.createBoundingBox();
@@ -152,7 +152,6 @@ public class Geometries extends Intersectable {
                 result = (result == null) ? box : result.surround(box);
             }
         }
-
         return result;
     }
 }

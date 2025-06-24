@@ -1,5 +1,6 @@
 package geometries;
 
+import primitives.AABB;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
@@ -145,5 +146,32 @@ public class Cylinder extends Tube {
             }
         }
         return intersections.stream().map(i -> new Intersection(this, i)).collect(Collectors.toList());
+    }
+
+    @Override
+    protected AABB createBoundingBoxHelper() {
+        Point base = axis.getHead();               // Base center of the cylinder
+        Point top = axis.getPoint(height);         // Top center of the cylinder
+
+        // Find min and max x, y, z from base and top points
+        double minX = Math.min(base.get_xyz().d1(), top.get_xyz().d1());
+        double minY = Math.min(base.get_xyz().d2(), top.get_xyz().d2());
+        double minZ = Math.min(base.get_xyz().d3(), top.get_xyz().d3());
+
+        double maxX = Math.max(base.get_xyz().d1(), top.get_xyz().d1());
+        double maxY = Math.max(base.get_xyz().d2(), top.get_xyz().d2());
+        double maxZ = Math.max(base.get_xyz().d3(), top.get_xyz().d3());
+
+        // Expand the min/max in every direction perpendicular to the axis by the radius
+        // This is a safe way to enclose the cylinder regardless of its orientation
+        minX -= radius;
+        minY -= radius;
+        minZ -= radius;
+
+        maxX += radius;
+        maxY += radius;
+        maxZ += radius;
+
+        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 }
