@@ -1,9 +1,6 @@
 package geometries;
 
-import primitives.Double3;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import java.util.List;
 
@@ -59,6 +56,11 @@ public class Tube extends RadialGeometry {
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    @Override
+    protected AABB createBoundingBoxHelper() {
+        return null;
     }
 
     @Override

@@ -94,6 +94,11 @@ public class Polygon extends Geometry {
     }
 
     @Override
+    protected AABB createBoundingBoxHelper() {
+        return null;
+    }
+
+    @Override
     protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {
         var intersections = this.plane.findIntersections(ray);
         if (intersections == null)

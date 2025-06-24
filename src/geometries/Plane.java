@@ -1,5 +1,6 @@
 package geometries;
 
+import primitives.AABB;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
@@ -54,6 +55,11 @@ public class Plane extends Geometry {
      */
     public Vector getNormal() {
         return normal;
+    }
+
+    @Override
+    protected AABB createBoundingBoxHelper() {
+        return null;
     }
 
     /**
