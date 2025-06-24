@@ -88,8 +88,4 @@ public class Plane extends Geometry {
         return List.of(new Intersection(this, ray.getPoint(t)));
     }
 
-    @Override
-    protected AABB createBoundingBoxHelper() {
-        return null;
-    }
 }
