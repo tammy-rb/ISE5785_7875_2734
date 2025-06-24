@@ -1,5 +1,7 @@
 package primitives;
 
+import static primitives.Util.isZero;
+
 public class AABB {
     private double x_min = 0;
     private double y_min = 0;
@@ -86,4 +88,47 @@ public class AABB {
                 Math.max(this.z_max, other.z_max)
         );
     }
+
+    /**
+     * Checks whether the given ray intersects this AABB.
+     *
+     * @param ray The ray to check for intersection.
+     * @return true if the ray intersects the bounding box, false otherwise.
+     */
+    public boolean intersects(Ray ray) {
+        Double3 originXYZ = ray.getHead().get_xyz();
+        Double3 dirXYZ = ray.getDirection().get_xyz();
+
+        double tMin = Double.NEGATIVE_INFINITY;
+        double tMax = Double.POSITIVE_INFINITY;
+
+        double[] originArr = {originXYZ.d1(), originXYZ.d2(), originXYZ.d3()};
+        double[] dirArr = {dirXYZ.d1(), dirXYZ.d2(), dirXYZ.d3()};
+        double[] minArr = {x_min, y_min, z_min};
+        double[] maxArr = {x_max, y_max, z_max};
+
+        for (int i = 0; i < 3; i++) {
+            if (isZero(dirArr[i])) {
+                // Ray is parallel to slab. No hit if origin not within slab
+                if (originArr[i] < minArr[i] || originArr[i] > maxArr[i]) {
+                    return false;
+                }
+            } else {
+                double t1 = (minArr[i] - originArr[i]) / dirArr[i];
+                double t2 = (maxArr[i] - originArr[i]) / dirArr[i];
+
+                double tEntry = Math.min(t1, t2);
+                double tExit = Math.max(t1, t2);
+
+                tMin = Math.max(tMin, tEntry);
+                tMax = Math.min(tMax, tExit);
+
+                if (tMin > tMax) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }

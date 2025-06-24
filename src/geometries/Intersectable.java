@@ -81,7 +81,7 @@ public abstract class Intersectable {
      * the geometry, or {@code null} if there are no intersections
      */
     public final List<Point> findIntersections(Ray ray) {
-        if (boundingBox != null && isBoundingBoxIntersected(ray)) {
+        if (boundingBox == null || isBoundingBoxIntersected(ray)){
             var list = calculateIntersections(ray);
             return list == null ? null : list.stream().map(intersection -> intersection.point).toList();
         }

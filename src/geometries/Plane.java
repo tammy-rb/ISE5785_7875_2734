@@ -1,5 +1,6 @@
 package geometries;
 
+import primitives.AABB;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
@@ -80,5 +81,10 @@ public class Plane extends Geometry {
             return null;
 
         return List.of(new Intersection(this, ray.getPoint(t)));
+    }
+
+    @Override
+    protected AABB createBoundingBoxHelper() {
+        return null;
     }
 }
