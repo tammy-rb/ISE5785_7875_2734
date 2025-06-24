@@ -13,7 +13,7 @@ public class MiniProjectTest {
             .setRayTracer(scene, RayTracerType.SIMPLE);
 
     @Test
-    void TestManhattanScene() {
+    void TestManhattanSceneNoSea() {
         // Adjusted ambient light for a darker, more realistic night scene
         scene.setAmbientLight(new AmbientLight(new Color(8, 8, 12)));
 
@@ -30,17 +30,21 @@ public class MiniProjectTest {
                 new Color(80, 80, 255)
         };
 
-        // Island setup
+        // Island setup - much more subtle, like a thin horizon line
         double seaLevel = 0;
-        double islandHeight = 8;
+        double islandHeight = 1.5;  // Reduced from 8 to 1.5 for subtle appearance
         double islandRadius = 1000;
         Point islandCenter = new Point(0, seaLevel, -950);
 
-        // Create island cylinder
+        // Create island cylinder - more subtle and darker
         scene.geometries.add(
                 new Cylinder(islandRadius, new Ray(islandCenter, new Vector(0, 1, 0)), islandHeight)
-                        .setEmission(new Color(60, 50, 40))
-                        .setMaterial(new Material().setKD(0.7).setKS(0.2).setShininess(20))
+                        .setEmission(new Color(25, 20, 15))  // Much darker, more subtle color
+                        .setMaterial(new Material()
+                                .setKD(0.8)     // Higher diffuse for matte appearance
+                                .setKS(0.1)     // Lower specular to reduce shine
+                                .setShininess(10)  // Lower shininess
+                                .setKR(0.05))   // Slight reflection to blend with water
         );
 
         // Building positions
@@ -60,7 +64,7 @@ public class MiniProjectTest {
 
             double worldX = islandCenter.get_xyz().d1() + relativeX;
             double worldZ = islandCenter.get_xyz().d3() + relativeZ;
-            double islandSurfaceY = seaLevel + islandHeight / 2;
+            double islandSurfaceY = seaLevel + islandHeight - 0.2;
 
             Point p1 = new Point(worldX - 30, islandSurfaceY, worldZ - 30);
             Point p2 = new Point(worldX + 30, islandSurfaceY + height, worldZ + 30);
@@ -75,8 +79,8 @@ public class MiniProjectTest {
                     new Material().setKD(0.2).setKS(0.8).setShininess(150).setKT(0.3));
         }
 
-        // === IMPROVED SEA SURFACE FOR NATURAL GLITTER PATH REFLECTIONS ===
-        createAdvancedSeaSurface(seaLevel);
+        // === SEA SURFACE DISABLED ===
+        // createAdvancedSeaSurface(seaLevel);  // COMMENTED OUT
 
         // Add stars
         Color starColor = new Color(220, 220, 200);
@@ -124,7 +128,7 @@ public class MiniProjectTest {
                 .setViewPlaneSize(200, 200)
                 .build()
                 .renderImage()
-                .writeToImage("manhattanNaturalGlitterPath");
+                .writeToImage("manhattanNoSea");  // Different filename
     }
 
     /**
