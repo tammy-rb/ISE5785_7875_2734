@@ -95,8 +95,28 @@ public class Polygon extends Geometry {
 
     @Override
     protected AABB createBoundingBoxHelper() {
-        return null;
+        Point first = vertices.getFirst();
+        double minX = first.get_xyz().d1(), maxX = first.get_xyz().d1();
+        double minY = first.get_xyz().d2(), maxY = first.get_xyz().d2();
+        double minZ = first.get_xyz().d3(), maxZ = first.get_xyz().d3();
+
+        for (int i = 1; i < vertices.size(); i++) {
+            Point p = vertices.get(i);
+            double x = p.get_xyz().d1(), y = p.get_xyz().d2(), z = p.get_xyz().d3();
+
+            if (x < minX) minX = x;
+            else if (x > maxX) maxX = x;
+
+            if (y < minY) minY = y;
+            else if (y > maxY) maxY = y;
+
+            if (z < minZ) minZ = z;
+            else if (z > maxZ) maxZ = z;
+        }
+
+        return new AABB(minX, maxX, minY, maxY, minZ, maxZ);
     }
+
 
     @Override
     protected List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance) {

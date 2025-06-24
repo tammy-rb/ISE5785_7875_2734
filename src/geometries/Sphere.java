@@ -89,7 +89,6 @@ public class Sphere extends RadialGeometry {
         double x = center.get_xyz().d1();
         double y = center.get_xyz().d2();
         double z = center.get_xyz().d3();
-
         return new AABB(
                 x - radius, y - radius, z - radius,
                 x + radius, y + radius, z + radius

@@ -57,11 +57,6 @@ public class Plane extends Geometry {
         return normal;
     }
 
-    @Override
-    protected AABB createBoundingBoxHelper() {
-        return null;
-    }
-
     /**
      * Finds the intersection point between a ray and the plane.
      * <p>
