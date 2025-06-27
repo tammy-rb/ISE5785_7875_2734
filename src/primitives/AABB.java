@@ -2,7 +2,7 @@ package primitives;
 
 import static primitives.Util.isZero;
 
-public class AABB {
+public class AABB extends CBR {
     private double x_min = 0;
     private double y_min = 0;
     private double z_min = 0;
@@ -74,16 +74,19 @@ public class AABB {
      * @param other The other axis-aligned bounding box to include.
      * @return A new AABB that completely encloses both this and the given AABB.
      */
-    public AABB surround(AABB other) {
-        if (other == null) return this;
+    @Override
+    public CBR surround(CBR other) {
+        if (!(other instanceof AABB aabb)) {
+            throw new IllegalArgumentException("surround: Expected AABB instance");
+        }
 
         return new AABB(
-                Math.min(this.x_min, other.x_min),
-                Math.min(this.y_min, other.y_min),
-                Math.min(this.z_min, other.z_min),
-                Math.max(this.x_max, other.x_max),
-                Math.max(this.y_max, other.y_max),
-                Math.max(this.z_max, other.z_max)
+                Math.min(this.x_min, aabb.x_min),
+                Math.min(this.y_min, aabb.y_min),
+                Math.min(this.z_min, aabb.z_min),
+                Math.max(this.x_max, aabb.x_max),
+                Math.max(this.y_max, aabb.y_max),
+                Math.max(this.z_max, aabb.z_max)
         );
     }
 
@@ -93,6 +96,7 @@ public class AABB {
      * @param ray The ray to check for intersection.
      * @return true if the ray intersects the bounding box, false otherwise.
      */
+    @Override
     public boolean intersects(Ray ray) {
         Double3 originXYZ = ray.getHead().get_xyz();
         Double3 dirXYZ = ray.getDirection().get_xyz();
@@ -130,4 +134,16 @@ public class AABB {
         return true;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof AABB other)) return false;
+
+        return isZero(this.x_min - other.x_min)
+                && isZero(this.y_min - other.y_min)
+                && isZero(this.z_min - other.z_min)
+                && isZero(this.x_max - other.x_max)
+                && isZero(this.y_max - other.y_max)
+                && isZero(this.z_max - other.z_max);
+    }
 }

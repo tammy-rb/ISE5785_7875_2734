@@ -14,23 +14,28 @@ import java.util.Objects;
  */
 public abstract class Intersectable {
 
-    private AABB boundingBox;
+    private CBR boundingBox;
 
-    protected final void createBoundingBox() {
+//    public abstract void createBVH();
+
+    // make a cbr
+    public final CBR createCBR() {
         if (boundingBox == null) {
             boundingBox = createBoundingBoxHelper();
         }
-    }
-
-    public AABB getBoundingBox() {
         return boundingBox;
     }
 
-    public void setBoundingBox(AABB boundingBox) {
+    public CBR getBoundingBox() {
+        return boundingBox;
+    }
+
+    public void setBoundingBox(CBR boundingBox) {
         this.boundingBox = boundingBox;
     }
 
-    protected abstract AABB createBoundingBoxHelper();
+    // nvi create cbr matching any special geometry
+    protected abstract CBR createBoundingBoxHelper();
 
     public static class Intersection {
         public final Geometry geometry;
@@ -123,7 +128,7 @@ public abstract class Intersectable {
     protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance);
 
     // check if a ray intersect the AABB box.
-    protected boolean isBoundingBoxIntersected(Ray ray) {
-        return true;
+    protected boolean isBoundingBoxIntersected(Ray ray){
+        return boundingBox.intersects(ray);
     }
 }

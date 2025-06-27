@@ -18,7 +18,7 @@ public class AllEffectsTest {
     AllEffectsTest() {
     }
 
-    private final Scene scene = new Scene("Cityscape");
+    private final Scene scene = new Scene("Cityscape", true);
     private final Camera.Builder cameraBuilder = Camera.getBuilder()
             .setRayTracer(scene, RayTracerType.SIMPLE);
 
@@ -129,7 +129,6 @@ public class AllEffectsTest {
                 .setViewPlaneDistance(1000)
                 .setResolution(1920, 1080)
                 .setViewPlaneSize(350, 200)
-                .setNumRays(4)
                 .setMultithreading(3)
                 .setDebugPrint(1)
                 .setNumRays(3 * 3)

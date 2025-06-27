@@ -1,6 +1,7 @@
 package geometries;
 
 import primitives.AABB;
+import primitives.CBR;
 import primitives.Ray;
 
 import java.util.*;
@@ -12,7 +13,6 @@ import java.util.*;
 public class Geometries extends Intersectable {
 
     private final List<Intersectable> geometries = new LinkedList<>();
-    private final boolean enableCBR;
 
     /**
      * Returns the length of the geometries' list.
@@ -27,16 +27,12 @@ public class Geometries extends Intersectable {
      * Default constructor for an empty geometries collection with CBR disabled.
      */
     public Geometries() {
-        this(false);
+
     }
 
-    /**
-     * Constructor for an empty geometries collection with configurable CBR.
-     *
-     * @param enableCBR Whether to enable coarse bounding rectangle optimization
-     */
-    public Geometries(boolean enableCBR) {
-        this.enableCBR = enableCBR;
+    @Override
+    public final void createBVH() {
+
     }
 
     /**
@@ -45,28 +41,7 @@ public class Geometries extends Intersectable {
      * @param geometries Intersectable geometries to add
      */
     public Geometries(Intersectable... geometries) {
-        this(false);
         add(geometries);
-    }
-
-    /**
-     * Constructs a Geometries object with one or more geometries and CBR flag.
-     *
-     * @param enableCBR  Whether to enable coarse bounding rectangle optimization
-     * @param geometries Intersectable geometries to add
-     */
-    public Geometries(boolean enableCBR, Intersectable... geometries) {
-        this.enableCBR = enableCBR;
-        add(geometries);
-    }
-
-    /**
-     * Returns whether CBR optimization is enabled.
-     *
-     * @return true if CBR is enabled, false otherwise
-     */
-    public boolean isEnableCBR() {
-        return enableCBR;
     }
 
     /**
@@ -86,23 +61,6 @@ public class Geometries extends Intersectable {
      * @param geometries One or more {@link Intersectable} geometries to add
      */
     public void add(Intersectable... geometries) {
-        if (enableCBR) {
-            for (Intersectable geometry : geometries) {
-                if (geometry.getBoundingBox() == null) {
-                    geometry.createBoundingBox();
-                }
-
-                if (geometry.getBoundingBox() != null) {
-                    if (getBoundingBox() == null) {
-                        setBoundingBox(geometry.getBoundingBox());
-                    } else {
-                        setBoundingBox(getBoundingBox().surround(geometry.getBoundingBox()));
-                    }
-                }
-
-                this.geometries.add(geometry);
-            }
-        }
         Collections.addAll(this.geometries, geometries);
     }
 
@@ -135,22 +93,23 @@ public class Geometries extends Intersectable {
      * @return AABB that bounds all internal geometries, or null if empty
      */
     @Override
-    protected AABB createBoundingBoxHelper() {
-        if (geometries.isEmpty()) return null;
+    protected CBR createBoundingBoxHelper() {
+        CBR result = null;
 
-        AABB result = null;
         for (Intersectable geometry : geometries) {
-            AABB box = geometry.getBoundingBox();
+            // Ensure the geometry has a bounding box and store it
+            CBR box = (geometry.getBoundingBox() != null)
+                    ? geometry.getBoundingBox()
+                    : geometry.createCBR();
 
-            // Only compute bounding box if not already set
-            if (box == null) {
-                geometry.createBoundingBox();
-                box = geometry.getBoundingBox();
-            }
-
+            // Combine into the global bounding box
             if (box != null) {
                 result = (result == null) ? box : result.surround(box);
             }
+        }
+
+        if (result != null) {
+            setBoundingBox(result);
         }
         return result;
     }

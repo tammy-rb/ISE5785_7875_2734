@@ -69,19 +69,19 @@ class AABBTests {
         AABB aabb1 = new AABB(-1, -1, -1, 1, 1, 1);
 
         // Case 1: Same AABB
-        AABB result1 = aabb1.surround(new AABB(-1, -1, -1, 1, 1, 1));
+        AABB result1 = (AABB)aabb1.surround(new AABB(-1, -1, -1, 1, 1, 1));
         assertEquals(aabb1, result1, "Case 1: Surround with same AABB should return identical AABB");
 
         // Case 2: AABB where only x_max is greater
         AABB aabb2 = new AABB(-1, -1, -1, 2, 1, 1);
         AABB expected2 = new AABB(-1, -1, -1, 2, 1, 1);
-        AABB result2 = aabb1.surround(aabb2);
+        AABB result2 = (AABB)aabb1.surround(aabb2);
         assertEquals(expected2, result2, "Case 2: Surround with one extended axis");
 
         // Case 3: Completely different AABB
         AABB aabb3 = new AABB(5, 6, 7, 9, 10, 11);
         AABB expected3 = new AABB(-1, -1, -1, 9, 10, 11);
-        AABB result3 = aabb1.surround(aabb3);
+        AABB result3 = (AABB)aabb1.surround(aabb3);
         assertEquals(expected3, result3, "Case 3: Surround with disjoint AABB");
     }
 }

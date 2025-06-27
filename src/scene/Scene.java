@@ -23,13 +23,9 @@ public class Scene {
 
     public List<LightSource> lights = new LinkedList<LightSource>();
 
-    public Scene(String sceneName, boolean enableCBR) {
-        name = sceneName;
-        this.geometries = new Geometries(enableCBR);
-    }
-
     public Scene(String sceneName) {
-        this(sceneName, false);
+        name = sceneName;
+        this.geometries = new Geometries();
     }
 
     /**

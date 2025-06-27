@@ -41,6 +41,8 @@ public class Camera implements Cloneable {
     private double printInterval = 0;
     private PixelManager pixelManager;
     private int numRays = 1;
+    private boolean enableCBR = false;
+    private boolean enableBVH = false;
 
     private Camera() {
     }
@@ -295,6 +297,16 @@ public class Camera implements Cloneable {
             return this;
         }
 
+        public Builder setCBR(boolean cbr) {
+            camera.enableCBR = cbr;
+            return this;
+        }
+
+        public Builder setBVH(boolean bvh) {
+            camera.enableBVH = bvh;
+            return this;
+        }
+
         public Camera build() {
             if (camera.p0 == null)
                 throw new MissingResourceException(ERROR_MESSAGE, CLASS_NAME, "p0");
@@ -318,7 +330,14 @@ public class Camera implements Cloneable {
 
             camera.viewPlaneCenter = camera.p0.add(camera.vTo.scale(camera.viewPlaneDistance));
             camera.imageWriter = new ImageWriter(camera.nX, camera.nY);
-
+            if (camera.rayTracer.scene != null){
+                if (camera.enableBVH || camera.enableCBR){
+                    camera.rayTracer.scene.geometries.createCBR();
+                }
+                if (camera.enableBVH){
+                    camera.rayTracer.scene.geometries.createBVH();
+                }
+            }
             return (Camera) camera.clone();
         }
     }

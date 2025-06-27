@@ -17,6 +17,11 @@ public class Plane extends Geometry {
     private final Point p;
     private final Vector normal;
 
+    @Override
+    protected AABB createBoundingBoxHelper() {
+        return null;
+    }
+
     /**
      * Constructor for creating a plane using three points.
      *
