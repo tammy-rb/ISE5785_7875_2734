@@ -12,124 +12,313 @@ public class MiniProjectTest {
     private final Camera.Builder cameraBuilder = Camera.getBuilder()
             .setRayTracer(scene, RayTracerType.SIMPLE);
 
-    @Test
-    void TestManhattanSceneNoSea() {
-        // Adjusted ambient light for a darker, more realistic night scene
-        scene.setAmbientLight(new AmbientLight(new Color(8, 8, 12)));
+//    @Test
+//    void TestManhattanSceneNoSea() {
+//        // NO ambient light for pure darkness - only moon illumination
+//        scene.setAmbientLight(new AmbientLight(new Color(0, 0, 0)));
+//
+//        // Diverse building colors (now used as material base colors, not emissions)
+//        Color[] buildingColors = {
+//                new Color(60, 40, 10),    // Dark brown
+//                new Color(40, 20, 20),    // Dark red
+//                new Color(10, 30, 60),    // Dark blue
+//                new Color(50, 25, 5),     // Dark orange
+//                new Color(20, 40, 50),    // Dark cyan
+//                new Color(15, 35, 15),    // Dark green
+//                new Color(45, 20, 45),    // Dark purple
+//                new Color(55, 55, 20),    // Dark yellow
+//                new Color(20, 20, 60)     // Dark blue
+//        };
+//
+//        // Island setup - create a thin horizon line effect with smaller radius
+//        double seaLevel = 0;
+//        double islandHeight = 0.3;  // Very thin - just barely visible as horizon line
+//        double islandRadius = 750;  // Increased to 750
+//        Point islandCenter = new Point(0, seaLevel, -950);
+//
+//        // Create island cylinder - very thin horizon line with non-emissive material
+//        scene.geometries.add(
+//                new Cylinder(islandRadius, new Ray(islandCenter, new Vector(0, 1, 0)), islandHeight)
+//                        .setEmission(new Color(30, 25, 15))  // No emission
+//                        .setMaterial(new Material()
+//                                .setKD(0.9)     // High diffuse to catch moonlight
+//                                .setKS(0.1)     // Low specular
+//                                .setShininess(20)
+//                                .setKR(0.02)
+//                        ) // Dark earth color
+//        );
+//
+//        // Building positions - better spaced arrangement
+//        int[][] positions = {
+//                {-500, -120, 240}, {-300, -20, 320}, {-150, -150, 280}, {0, 0, 200},
+//                {150, -80, 380}, {300, -40, 260}, {450, -130, 340}, {-400, -180, 300},
+//                {100, -100, 250}, {-100, 40, 220}, {350, 0, 290}, {-550, -90, 310},
+//                {-650, -50, 225}, {550, -70, 255}, {-200, -200, 245}, {50, 60, 275},
+//                {-450, 20, 350}, {400, -160, 305}, {-50, -120, 285}, {-250, -10, 195}
+//        };
+//
+//        // Create buildings - non-emissive, will only be lit by moon
+//        for (int i = 0; i < 20; i++) {
+//            int relativeX = positions[i][0];
+//            int relativeZ = positions[i][1];
+//            int height = positions[i][2];
+//
+//            double worldX = islandCenter.get_xyz().d1() + relativeX;
+//            double worldZ = islandCenter.get_xyz().d3() + relativeZ;
+//            double islandSurfaceY = seaLevel + islandHeight;
+//
+//            Point p1 = new Point(worldX - 30, islandSurfaceY, worldZ - 30);
+//            Point p2 = new Point(worldX + 30, islandSurfaceY + height, worldZ + 30);
+//
+//            scene.geometries.add(
+//                    createBox(p1, p2, buildingColors[i % buildingColors.length], // No emission - pure black
+//                            new Material()
+//                                    .setKD(0.8)  // High diffuse to catch moonlight
+//                                    .setKS(0.2)  // Some specular for highlights
+//                                    .setShininess(40)
+//                    ));
+//
+//            // Very dim windows - barely visible unless directly lit by moon
+//            addBuildingWindows(p1, p2, new Color(8, 8, 15), // No emission
+//                    new Material()
+//                            .setKD(0.4)
+//                            .setKS(0.6)
+//                            .setShininess(150)
+//                            .setKT(0.7));
+//        }
+//
+//        // Add very dim stars - barely visible pinpoints
+//        Color starColor = new Color(15, 15, 12);  // Very dim star color
+//        int numStars = 800;  // Fewer stars
+//
+//        for (int i = 0; i < numStars; i++) {
+//            // Expanded star field to cover entire visible area
+//            double starX = (Math.random() * 8000) - 4000;
+//            double starY = 600 + (Math.random() * 2000);
+//            double starZ = -12000 + (Math.random() * 10000);
+//            double starSize = 0.8 + Math.random() * 1.5;    // Smaller stars
+//
+//            scene.geometries.add(createStar(starX, starY, starZ, starSize, starColor));
+//        }
+//
+//        // Add moon sphere - the primary light source (still emissive for visibility)
+//        Point moonCenter = new Point(2000, 2400, -8000);
+//        scene.geometries.add(
+//                new Sphere(moonCenter, 500)
+//                        .setEmission(new Color(400, 400, 350))  // Keep moon bright for visibility
+//                        .setMaterial(new Material()
+//                                .setKD(0.8)
+//                                .setKS(0.2)
+//                                .setShininess(20))
+//        );
+//
+//        // Add airplane - non-emissive
+//        scene.geometries.add(createAirplane(
+//                new Point(-300, 740, -900),
+//                12.0,
+//                new Color(45, 45, 50), // No emission
+//                new Material()
+//                        .setKD(0.6)
+//                        .setKS(0.4)
+//                        .setShininess(300)
+//                        .setKR(0.1)
+//        ));
+//
+//        // === PURE MOON SPOTLIGHT LIGHTING ===
+//        setupMoonSpotlight(moonCenter);
+//
+//        // Camera setup
+//        cameraBuilder
+//                .setLocation(new Point(0, 60, 500))
+//                .setDirection(
+//                        new Vector(0, -60, -1400).normalize(),
+//                        new Vector(0, 1400, -60).normalize()
+//                )
+//                .setViewPlaneDistance(120)
+//                .setResolution(1024, 1024)
+//                .setMultithreading(-2)
+//                .setDebugPrint(1)
+//                .setViewPlaneSize(200, 200)
+//                .build()
+//                .renderImage()
+//                .writeToImage("manhattanMoonSpotlight");
+//    }
+@Test
+void TestManhattanSceneNoSea() {
+    // NO ambient light for pure darkness - only moon illumination
+    scene.setAmbientLight(new AmbientLight(new Color(0, 0, 0)));
 
-        // Diverse building colors
-        Color[] buildingColors = {
-                new Color(255, 200, 0),
-                new Color(200, 70, 70),
-                new Color(0, 130, 255),
-                new Color(255, 100, 0),
-                new Color(100, 200, 255),
-                new Color(50, 160, 60),
-                new Color(180, 80, 180),
-                new Color(250, 250, 90),
-                new Color(80, 80, 255)
-        };
+    // Diverse building colors (now used as material base colors, not emissions)
+    Color[] buildingColors = {
+            new Color(60, 40, 10),    // Dark brown
+            new Color(40, 20, 20),    // Dark red
+            new Color(10, 30, 60),    // Dark blue
+            new Color(50, 25, 5),     // Dark orange
+            new Color(20, 40, 50),    // Dark cyan
+            new Color(15, 35, 15),    // Dark green
+            new Color(45, 20, 45),    // Dark purple
+            new Color(55, 55, 20),    // Dark yellow
+            new Color(20, 20, 60)     // Dark blue
+    };
 
-        // Island setup - much more subtle, like a thin horizon line
-        double seaLevel = 0;
-        double islandHeight = 1.5;  // Reduced from 8 to 1.5 for subtle appearance
-        double islandRadius = 1000;
-        Point islandCenter = new Point(0, seaLevel, -950);
+    // Island setup - create a thin horizon line effect with smaller radius
+    double seaLevel = 0;
+    double islandHeight = 0.3;  // Very thin - just barely visible as horizon line
+    double islandRadius = 750;  // Increased to 750
+    Point islandCenter = new Point(0, seaLevel, -950);
 
-        // Create island cylinder - more subtle and darker
+    // Create island cylinder - very thin horizon line with non-emissive material
+    scene.geometries.add(
+            new Cylinder(islandRadius, new Ray(islandCenter, new Vector(0, 1, 0)), islandHeight)
+                    .setEmission(new Color(0, 0, 0))  // No emission - pure black
+                    .setMaterial(new Material()
+                            .setKD(0.9)     // High diffuse to catch moonlight
+                            .setKS(0.1)     // Low specular
+                            .setShininess(20)
+                            .setKR(0.02)
+                    )
+    );
+
+    // Building positions - better spaced arrangement
+    int[][] positions = {
+            {-500, -120, 240}, {-300, -20, 320}, {-150, -150, 280}, {0, 0, 200},
+            {150, -80, 380}, {300, -40, 260}, {450, -130, 340}, {-400, -180, 300},
+            {100, -100, 250}, {-100, 40, 220}, {350, 0, 290}, {-550, -90, 310},
+            {-650, -50, 225}, {550, -70, 255}, {-200, -200, 245}, {50, 60, 275},
+            {-450, 20, 350}, {400, -160, 305}, {-50, -120, 285}, {-250, -10, 195}
+    };
+
+    // Create buildings - non-emissive, will only be lit by moon
+    for (int i = 0; i < 20; i++) {
+        int relativeX = positions[i][0];
+        int relativeZ = positions[i][1];
+        int height = positions[i][2];
+
+        double worldX = islandCenter.get_xyz().d1() + relativeX;
+        double worldZ = islandCenter.get_xyz().d3() + relativeZ;
+        double islandSurfaceY = seaLevel + islandHeight;
+
+        Point p1 = new Point(worldX - 30, islandSurfaceY, worldZ - 30);
+        Point p2 = new Point(worldX + 30, islandSurfaceY + height, worldZ + 30);
+
         scene.geometries.add(
-                new Cylinder(islandRadius, new Ray(islandCenter, new Vector(0, 1, 0)), islandHeight)
-                        .setEmission(new Color(25, 20, 15))  // Much darker, more subtle color
-                        .setMaterial(new Material()
-                                .setKD(0.8)     // Higher diffuse for matte appearance
-                                .setKS(0.1)     // Lower specular to reduce shine
-                                .setShininess(10)  // Lower shininess
-                                .setKR(0.05))   // Slight reflection to blend with water
-        );
+                createBox(p1, p2, new Color(0, 0, 0), // No emission - pure black
+                        new Material()
+                                .setKD(0.8)  // High diffuse to catch moonlight
+                                .setKS(0.2)  // Some specular for highlights
+                                .setShininess(40)
+                ));
 
-        // Building positions
-        int[][] positions = {
-                {-400, -80, 140}, {-250, 30, 200}, {-100, -100, 170}, {50, 50, 120},
-                {200, -40, 280}, {350, 15, 160}, {500, -90, 240}, {-300, -120, 180},
-                {150, -60, 150}, {-50, 80, 130}, {400, 40, 190}, {-450, -50, 210},
-                {-600, 0, 125}, {600, -25, 155}, {-150, -150, 145}, {100, 90, 175},
-                {-350, 60, 220}, {450, -110, 205}, {0, -80, 185}, {-200, 20, 115}
-        };
-
-        // Create buildings
-        for (int i = 0; i < 20; i++) {
-            int relativeX = positions[i][0];
-            int relativeZ = positions[i][1];
-            int height = positions[i][2];
-
-            double worldX = islandCenter.get_xyz().d1() + relativeX;
-            double worldZ = islandCenter.get_xyz().d3() + relativeZ;
-            double islandSurfaceY = seaLevel + islandHeight - 0.2;
-
-            Point p1 = new Point(worldX - 30, islandSurfaceY, worldZ - 30);
-            Point p2 = new Point(worldX + 30, islandSurfaceY + height, worldZ + 30);
-
-            scene.geometries.add(
-                    createBox(p1, p2, buildingColors[i % buildingColors.length],
-                            new Material().setKD(0.6).setKS(0.3).setShininess(40))
-            );
-
-            // Windows with emission to act as light sources
-            addBuildingWindows(p1, p2, new Color(40, 40, 80),
-                    new Material().setKD(0.2).setKS(0.8).setShininess(150).setKT(0.3));
-        }
-
-        // === SEA SURFACE DISABLED ===
-        // createAdvancedSeaSurface(seaLevel);  // COMMENTED OUT
-
-        // Add stars
-        Color starColor = new Color(220, 220, 200);
-        int numStars = 700;
-
-        for (int i = 0; i < numStars; i++) {
-            double starX = (Math.random() * 2000) - 1000;
-            double starY = 50 + (Math.random() * 450);
-            double starZ = -2000 + (Math.random() * 3000);
-            double starSize = 0.5 + Math.random() * 1.5;
-
-            scene.geometries.add(createStar(starX, starY, starZ, starSize, starColor));
-        }
-
-        // Add moon sphere
-        Point moonCenter = new Point(1300, 2100, -5000);
-        scene.geometries.add(
-                new Sphere(moonCenter, 400)
-                        .setEmission(new Color(200, 200, 180))
-                        .setMaterial(new Material().setKD(0.6).setKS(0.2).setShininess(15))
-        );
-
-        // Add airplane
-        scene.geometries.add(createAirplane(
-                new Point(-300, 740, -900),
-                12.0,
-                new Color(180, 180, 200),
-                new Material().setKD(0.3).setKS(0.7).setShininess(300).setKR(0.1)
-        ));
-
-        // === ENHANCED LIGHTING FOR GLITTER PATH EFFECTS ===
-        setupAdvancedLighting(moonCenter);
-
-        // Camera setup
-        cameraBuilder
-                .setLocation(new Point(0, 60, 500))
-                .setDirection(
-                        new Vector(0, -60, -1400).normalize(),
-                        new Vector(0, 1400, -60).normalize()
-                )
-                .setViewPlaneDistance(120)
-                .setResolution(1024, 1024)
-                .setMultithreading(-2)
-                .setDebugPrint(1)
-                .setViewPlaneSize(200, 200)
-                .build()
-                .renderImage()
-                .writeToImage("manhattanNoSea");  // Different filename
+        // Very dim windows - barely visible unless directly lit by moon
+        addBuildingWindows(p1, p2, new Color(0, 0, 0), // No emission
+                new Material()
+                        .setKD(0.4)
+                        .setKS(0.6)
+                        .setShininess(150)
+                        .setKT(0.7));
     }
+
+    // Add very dim stars - barely visible pinpoints
+    Color starColor = new Color(15, 15, 12);  // Very dim star color
+    int numStars = 800;  // Fewer stars
+
+    for (int i = 0; i < numStars; i++) {
+        // Expanded star field to cover entire visible area
+        double starX = (Math.random() * 8000) - 4000;
+        double starY = 600 + (Math.random() * 2000);
+        double starZ = -12000 + (Math.random() * 10000);
+        double starSize = 0.8 + Math.random() * 1.5;    // Smaller stars
+
+        scene.geometries.add(createStar(starX, starY, starZ, starSize, starColor));
+    }
+
+    // REPOSITIONED MOON - directly above the city center for proper illumination
+    Point moonCenter = new Point(0, 1500, -400);  // Above city center
+    scene.geometries.add(
+            new Sphere(moonCenter, 200)  // Smaller moon
+                    .setEmission(new Color(300, 300, 250))  // Bright moon for visibility
+                    .setMaterial(new Material()
+                            .setKD(0.8)
+                            .setKS(0.2)
+                            .setShininess(20))
+    );
+
+    // Add airplane - non-emissive
+    scene.geometries.add(createAirplane(
+            new Point(-300, 740, -900),
+            12.0,
+            new Color(0, 0, 0), // No emission
+            new Material()
+                    .setKD(0.6)
+                    .setKS(0.4)
+                    .setShininess(300)
+                    .setKR(0.1)
+    ));
+
+    // === IMPROVED MOON SPOTLIGHT LIGHTING ===
+    setupMoonSpotlight(moonCenter);
+
+    // Camera setup
+    cameraBuilder
+            .setLocation(new Point(0, 60, 500))
+            .setDirection(
+                    new Vector(0, -60, -1400).normalize(),
+                    new Vector(0, 1400, -60).normalize()
+            )
+            .setViewPlaneDistance(120)
+            .setResolution(1024, 1024)
+            .setMultithreading(-2)
+            .setDebugPrint(1)
+            .setViewPlaneSize(200, 200)
+            .build()
+            .renderImage()
+            .writeToImage("manhattanMoonSpotlight");
+}
+
+    /**
+     * Sets up pure moon spotlight for dramatic nighttime scene with strong shadows
+     */
+    private void setupMoonSpotlight(Point moonCenter) {
+        // SPOTLIGHT pointing directly down from moon toward city center
+        Vector moonDirection = new Vector(0, -1, 0).normalize(); // Straight down
+
+        scene.lights.add(
+                new SpotLight(new Color(2000, 2000, 1600), moonCenter, moonDirection)
+                        .setKL(0.00001)       // Very low linear attenuation
+                        .setKQ(0.0000001)     // Very low quadratic attenuation
+                        .setNarrowBeam(35)    // Wide enough to cover the city
+        );
+
+        // Additional point light from moon for ambient fill (optional)
+        scene.lights.add(
+                new PointLight(new Color(800, 800, 600), moonCenter)
+                        .setKL(0.0001)
+                        .setKQ(0.000001)
+        );
+    }
+    /**
+     * Sets up pure moon spotlight for dramatic nighttime scene with strong shadows
+     */
+//    private void setupMoonSpotlight(Point moonCenter) {
+//        // SINGLE SPOTLIGHT from moon position toward the city
+//        Vector moonDirection = new Vector(0, -1, 0.2).normalize(); // Angled down toward buildings
+//
+//        scene.lights.add(
+//                new SpotLight(new Color(1200, 1200, 1000), moonCenter, moonDirection)
+//                        .setKL(0.0001)        // Linear attenuation
+//                        .setKQ(0.000001)      // Quadratic attenuation
+//                        .setNarrowBeam(25)    // Focused beam angle for spotlight effect
+//        );
+//
+//        // Alternative: If SpotLight doesn't exist in your system, use highly attenuated PointLight
+//        /*
+//        scene.lights.add(
+//                new PointLight(new Color(1500, 1500, 1200), moonCenter)
+//                        .setKL(0.001)         // High linear attenuation for dramatic falloff
+//                        .setKQ(0.00001)       // High quadratic attenuation
+//        );
+//        */
+//    }
 
     /**
      * Creates an advanced sea surface optimized for natural glitter path reflections
@@ -147,7 +336,7 @@ public class MiniProjectTest {
                 .setShininess(400)  // Very sharp reflections
                 .setKT(0.03);   // Minimal transparency
 
-        Color seaColor = new Color(2, 8, 15);  // Very dark water
+        Color seaColor = new Color(0, 0, 0);  // Pure black emission - no self-illumination
 
         double stepSize = seaSize / steps;
         double half = seaSize / 2;
@@ -179,11 +368,11 @@ public class MiniProjectTest {
                 Point p10 = new Point(x1, seaLevel + wave1_0, z0);
                 Point p11 = new Point(x1, seaLevel + wave1_1, z1);
 
-                // Create triangles with optimized material
+                // Create triangles with non-emissive material
                 scene.geometries.add(new Triangle(p00, p10, p11)
                         .setEmission(seaColor)
-                        .setMaterial(seaMaterial));
-
+                        .setMaterial(seaMaterial)); // Very dark blue
+//.setEmission(new Color(1, 4, 8)
                 scene.geometries.add(new Triangle(p00, p11, p01)
                         .setEmission(seaColor)
                         .setMaterial(seaMaterial));
@@ -227,49 +416,6 @@ public class MiniProjectTest {
         double amplitudeFactor = 1.0 - distanceFactor * 0.15;
 
         return totalWave * amplitudeFactor;
-    }
-
-    /**
-     * Sets up advanced lighting for optimal glitter path visibility
-     */
-    private void setupAdvancedLighting(Point moonCenter) {
-        // Primary moon light - bright enough to create strong glitter path
-        scene.lights.add(
-                new PointLight(new Color(280, 280, 240), moonCenter)
-                        .setKL(0.000003)
-                        .setKQ(0.00000008)
-        );
-
-        // Secondary moon light for enhanced glitter effect
-        scene.lights.add(
-                new PointLight(new Color(200, 200, 180), moonCenter.add(new Vector(100, -50, 200)))
-                        .setKL(0.000008)
-                        .setKQ(0.0000003)
-        );
-
-        // Ambient sky light
-        scene.lights.add(
-                new DirectionalLight(new Color(25, 25, 40), new Vector(-0.1, -0.9, -0.4))
-        );
-
-        // Building lights that will also create glitter paths
-        scene.lights.add(
-                new PointLight(new Color(255, 180, 80), new Point(-300, 200, -200))
-                        .setKL(0.00015)
-                        .setKQ(0.00002)
-        );
-
-        scene.lights.add(
-                new PointLight(new Color(80, 180, 255), new Point(400, 250, -300))
-                        .setKL(0.00012)
-                        .setKQ(0.000015)
-        );
-
-        scene.lights.add(
-                new PointLight(new Color(255, 120, 180), new Point(0, 180, -100))
-                        .setKL(0.0002)
-                        .setKQ(0.00003)
-        );
     }
 
     /**
@@ -361,7 +507,7 @@ public class MiniProjectTest {
                     centerZ + outerRadius * Math.sin(angle2)
             );
 
-            // Stars are primarily emissive, with minimal reflection
+            // Stars are minimally emissive
             star.add(
                     new Triangle(p1, p2, center).setEmission(color)
                             .setMaterial(new Material().setKS(0).setShininess(0)) // No specularity for a star

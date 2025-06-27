@@ -15,9 +15,10 @@ import static java.awt.Color.*;
  */
 public class AllEffectsTest {
 
-    AllEffectsTest() {}
+    AllEffectsTest() {
+    }
 
-    private final Scene scene = new Scene("Cityscape", true);
+    private final Scene scene = new Scene("Cityscape");
     private final Camera.Builder cameraBuilder = Camera.getBuilder()
             .setRayTracer(scene, RayTracerType.SIMPLE);
 
@@ -29,27 +30,24 @@ public class AllEffectsTest {
     @Test
     void TestAllEffects() {
 
+        Geometries geometries = new Geometries(new Sphere(new Point(0, 0, -400), 60)
+                .setEmission(new Color(30, 30, 80))
+                .setMaterial(new Material()
+                        .setKD(0.2)
+                        .setKS(0.8)
+                        .setShininess(300)
+                        .setKT(0.9)
+                        .setKR(0.05)), new Sphere(new Point(-100, 20, -350), 40)
+                .setEmission(new Color(10, 10, 10))
+                .setMaterial(new Material()
+                        .setKD(0.1)
+                        .setKS(0.9)
+                        .setShininess(500)
+                        .setKR(0.9)));
         scene.setAmbientLight(new AmbientLight(new Color(20, 20, 20)));
 
         scene.geometries.add(
-                new Sphere(new Point(0, 0, -400), 60)
-                        .setEmission(new Color(30, 30, 80))
-                        .setMaterial(new Material()
-                                .setKD(0.2)
-                                .setKS(0.8)
-                                .setShininess(300)
-                                .setKT(0.9)
-                                .setKR(0.05))
-        );
-
-        scene.geometries.add(
-                new Sphere(new Point(-100, 20, -350), 40)
-                        .setEmission(new Color(10, 10, 10))
-                        .setMaterial(new Material()
-                                .setKD(0.1)
-                                .setKS(0.9)
-                                .setShininess(500)
-                                .setKR(0.9))
+                geometries
         );
 
         scene.geometries.add(
@@ -134,9 +132,9 @@ public class AllEffectsTest {
                 .setNumRays(4)
                 .setMultithreading(3)
                 .setDebugPrint(1)
-                .setNumRays(3*3)
+                .setNumRays(3 * 3)
                 .build()
                 .renderImage()
                 .writeToImage("CityscapeRender");
-}
+    }
 }

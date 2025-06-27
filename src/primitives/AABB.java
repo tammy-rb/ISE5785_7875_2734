@@ -10,8 +10,6 @@ public class AABB {
     private double y_max = 0;
     private double z_max = 0;
 
-    public AABB() {}
-
     public AABB(double x_min, double y_min, double z_min, double x_max, double y_max, double z_max) {
         this.x_min = x_min;
         this.y_min = y_min;
