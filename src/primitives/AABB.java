@@ -261,4 +261,17 @@ public class AABB extends CBR {
                 && isZero(this.y_max - other.y_max)
                 && isZero(this.z_max - other.z_max);
     }
+
+    /**
+     * Calculates the surface area of the bounding box.
+     *
+     * @return the surface area of this AABB
+     */
+    @Override
+    public double surfaceArea() {
+        double dx = x_max - x_min;
+        double dy = y_max - y_min;
+        double dz = z_max - z_min;
+        return 2 * (dx * dy + dx * dz + dy * dz);
+    }
 }

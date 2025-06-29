@@ -9,4 +9,6 @@ public abstract class CBR {
 
     public abstract double center(int axis); // Returns center value along specified axis
 
+    public abstract double surfaceArea();
+
 }

@@ -49,9 +49,9 @@ class TeapotTest {
     @Test
     @Disabled
     void testTeapot3() {
-//        for (int i = 100; i > 0; --i) {
+        for (int i = 100; i > 0; --i) {
             teapot3();
-//        }
+        }
     }
 
     /**
