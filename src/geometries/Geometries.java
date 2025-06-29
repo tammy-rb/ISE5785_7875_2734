@@ -195,7 +195,56 @@ public class Geometries extends Intersectable {
             setBoundingBox(leftBox.surround(rightBox));
         }
     }
-
-
-
+//    public void createBVH() {
+//        int size = geometries.size();
+//        if (size <= 2) {
+//            // Base case: nothing to subdivide
+//            return;
+//        }
+//
+//        // Calculate this node's bounding box
+//        CBR rootBox = createCBR();
+//        int axis = rootBox.longestAxis();
+//
+//        // Sort geometries in-place by center on longest axis
+//        geometries.sort(Comparator.comparingDouble(g -> {
+//            CBR cbr = g.getBoundingBox();
+//            return cbr != null ? cbr.center(axis) : 0.0;
+//        }));
+//
+//        // Split current list into two halves (in-place)
+//        Geometries left = new Geometries();
+//        Geometries right = new Geometries();
+//
+//        for (int i = 0; i < size; i++) {
+//            if (i < size / 2) {
+//                left.geometries.add(geometries.get(i));
+//            } else {
+//                right.geometries.add(geometries.get(i));
+//            }
+//        }
+//
+//        // Recursively apply BVH to child nodes
+//        left.createBVH();
+//        right.createBVH();
+//
+//        // Replace current list with two BVH children
+//        geometries.clear();
+//        geometries.add(left);
+//        geometries.add(right);
+//
+//        // Safely update this node's bounding box considering nulls
+//        CBR leftBox = left.getBoundingBox();
+//        CBR rightBox = right.getBoundingBox();
+//
+//        if (leftBox == null && rightBox == null) {
+//            this.setBoundingBox(null);
+//        } else if (leftBox == null) {
+//            this.setBoundingBox(rightBox);
+//        } else if (rightBox == null) {
+//            this.setBoundingBox(leftBox);
+//        } else {
+//            this.setBoundingBox(leftBox.surround(rightBox));
+//        }
+//    }
 }

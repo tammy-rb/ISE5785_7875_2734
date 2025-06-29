@@ -49,9 +49,9 @@ class TeapotTest {
     @Test
     @Disabled
     void testTeapot3() {
-        for (int i = 100; i > 0; --i) {
+//        for (int i = 100; i > 0; --i) {
             teapot3();
-        }
+//        }
     }
 
     /**
@@ -107,6 +107,7 @@ class TeapotTest {
                 // .setMultithreading(-1) // 9.6
                 .setMultithreading(-2) // 25
                 .setDebugPrint(1)
+                .setNumRays(3*3)
                 // .setMultithreading(1) // 25.8
                 // .setMultithreading(2) // 13.6
                 // .setMultithreading(3) // 10.7

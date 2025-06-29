@@ -349,6 +349,7 @@ class AstronautTest {
                 .setLocation(new Point(0, -10, 100))
                 .setDirection(new Point(0, -5, -50), Vector.AXIS_Y)
                 .setViewPlaneDistance(90)
+                .enableBVH()
                 .setViewPlaneSize(120, 120)
                 .setResolution(1200, 1200)
                 .build()
