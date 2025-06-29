@@ -1,6 +1,5 @@
 package geometries;
 
-import primitives.AABB;
 import primitives.CBR;
 import primitives.Ray;
 
@@ -27,12 +26,6 @@ public class Geometries extends Intersectable {
      * Default constructor for an empty geometries collection with CBR disabled.
      */
     public Geometries() {
-
-    }
-
-    @Override
-    public final void createBVH() {
-
     }
 
     /**
@@ -112,5 +105,52 @@ public class Geometries extends Intersectable {
             setBoundingBox(result);
         }
         return result;
+    }
+
+    /**
+     * Recursively builds a BVH by splitting geometries along the longest axis.
+     * Splits the list in-place into two child nodes and replaces this node’s geometries with them.
+     */
+    public void createBVH() {
+        int size = geometries.size();
+        if (size <= 2) {
+            // Base case: nothing to subdivide
+            return;
+        }
+
+        // Calculate this node's bounding box
+        CBR rootBox = createCBR();
+        int axis = rootBox.longestAxis();
+
+        // Sort geometries in-place by center on longest axis
+        geometries.sort(Comparator.comparingDouble(g -> {
+            CBR cbr = g.getBoundingBox();
+            return cbr != null ? cbr.center(axis) : 0.0;
+        }));
+
+        // Split current list into two halves (in-place)
+        Geometries left = new Geometries();
+        Geometries right = new Geometries();
+
+        // Reuse the same internal list, no extra copies
+        for (int i = 0; i < size; i++) {
+            if (i < size / 2) {
+                left.geometries.add(geometries.get(i));
+            } else {
+                right.geometries.add(geometries.get(i));
+            }
+        }
+
+        // Recursively apply BVH to child nodes
+        left.createBVH();
+        right.createBVH();
+
+        // Replace current list with two BVH children
+        geometries.clear();
+        geometries.add(left);
+        geometries.add(right);
+
+        // Update this node's bounding box
+        this.setBoundingBox(left.getBoundingBox().surround(right.getBoundingBox()));
     }
 }

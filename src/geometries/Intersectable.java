@@ -16,9 +16,7 @@ public abstract class Intersectable {
 
     private CBR boundingBox;
 
-//    public abstract void createBVH();
-
-    // make a cbr
+    // make a cbr using nvi
     public final CBR createCBR() {
         if (boundingBox == null) {
             boundingBox = createBoundingBoxHelper();
@@ -128,7 +126,7 @@ public abstract class Intersectable {
     protected abstract List<Intersection> calculateIntersectionsHelper(Ray ray, double maxDistance);
 
     // check if a ray intersect the AABB box.
-    protected boolean isBoundingBoxIntersected(Ray ray){
+    protected boolean isBoundingBoxIntersected(Ray ray) {
         return boundingBox.intersects(ray);
     }
 }

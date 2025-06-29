@@ -331,7 +331,7 @@ public class Camera implements Cloneable {
             camera.viewPlaneCenter = camera.p0.add(camera.vTo.scale(camera.viewPlaneDistance));
             camera.imageWriter = new ImageWriter(camera.nX, camera.nY);
             if (camera.rayTracer.scene != null){
-                if (camera.enableBVH || camera.enableCBR){
+                if (camera.enableCBR){
                     camera.rayTracer.scene.geometries.createCBR();
                 }
                 if (camera.enableBVH){
