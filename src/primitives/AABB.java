@@ -140,6 +140,10 @@ public class AABB extends CBR {
      */
     @Override
     public CBR surround(CBR other) {
+        if (other == null) {
+            return this;
+        }
+
         if (!(other instanceof AABB aabb)) {
             throw new IllegalArgumentException("surround: Expected AABB instance");
         }

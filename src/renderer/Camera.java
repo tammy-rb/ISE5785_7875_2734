@@ -126,7 +126,7 @@ public class Camera implements Cloneable {
     private void castRay(int j, int i) {
         Point pixelCenter = constructPixelCenter(nX, nY, j, i);
 
-        if (numRays == 1 ) {
+        if (numRays == 1) {
             Ray ray = new Ray(p0, pixelCenter.subtract(p0));
             Color intensity = rayTracer.traceRay(ray);
             imageWriter.writePixel(j, i, intensity);
@@ -297,13 +297,13 @@ public class Camera implements Cloneable {
             return this;
         }
 
-        public Builder setCBR(boolean cbr) {
-            camera.enableCBR = cbr;
+        public Builder enableCBR() {
+            camera.enableCBR = true;
             return this;
         }
 
-        public Builder setBVH(boolean bvh) {
-            camera.enableBVH = bvh;
+        public Builder enableBVH() {
+            camera.enableBVH = true;
             return this;
         }
 
@@ -330,11 +330,11 @@ public class Camera implements Cloneable {
 
             camera.viewPlaneCenter = camera.p0.add(camera.vTo.scale(camera.viewPlaneDistance));
             camera.imageWriter = new ImageWriter(camera.nX, camera.nY);
-            if (camera.rayTracer.scene != null){
-                if (camera.enableCBR){
+            if (camera.rayTracer.scene != null) {
+                if (camera.enableCBR) {
                     camera.rayTracer.scene.geometries.createCBR();
                 }
-                if (camera.enableBVH){
+                if (camera.enableBVH) {
                     camera.rayTracer.scene.geometries.createBVH();
                 }
             }

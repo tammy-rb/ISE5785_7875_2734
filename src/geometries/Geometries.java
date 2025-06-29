@@ -149,7 +149,6 @@ public class Geometries extends Intersectable {
         geometries.clear();
         geometries.add(left);
         geometries.add(right);
-
         // Update this node's bounding box
         this.setBoundingBox(left.getBoundingBox().surround(right.getBoundingBox()));
     }

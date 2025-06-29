@@ -18,7 +18,7 @@ public class AllEffectsTest {
     AllEffectsTest() {
     }
 
-    private final Scene scene = new Scene("Cityscape", true);
+    private final Scene scene = new Scene("Cityscape");
     private final Camera.Builder cameraBuilder = Camera.getBuilder()
             .setRayTracer(scene, RayTracerType.SIMPLE);
 
