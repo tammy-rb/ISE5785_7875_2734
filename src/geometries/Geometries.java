@@ -109,142 +109,165 @@ public class Geometries extends Intersectable {
 
     /**
      * Recursively builds a BVH by splitting geometries along the longest axis.
-     * Splits the list in-place into two child nodes and replaces this node’s geometries with them.
+     * Splits the list in-place into two child nodes and replaces this node's geometries with them.
+     * Limited to a maximum recursion depth of 4.
      */
     public void createBVH() {
-        if (geometries.size() <= 2) return;
+        createBVH(0);
+    }
+
+    /**
+     * Recursively builds a BVH by splitting geometries along the longest axis.
+     * Splits the list in-place into two child nodes and replaces this node's geometries with them.
+     *
+     * @param depth Current recursion depth
+     */
+    private void createBVH(int depth) {
+        // Base case: don't subdivide small lists or if we've reached max depth
+        if (geometries.size() <= 2 || depth >= 4) {
+            return;
+        }
+
+        // Flatten any nested Geometries to avoid infinite recursion
+        List<Intersectable> flattenedGeometries = new ArrayList<>();
+        flattenGeometries(geometries, flattenedGeometries);
+
+        // If after flattening we still have too few geometries, don't build BVH
+        if (flattenedGeometries.size() <= 2) {
+            geometries.clear();
+            geometries.addAll(flattenedGeometries);
+            return;
+        }
 
         // Ensure all geometries have bounding boxes
-        List<Intersectable> validGeometries = geometries.stream()
-                .peek(g -> {
-                    if (g.getBoundingBox() == null)
-                        g.createCBR();
-                })
-                .filter(g -> g.getBoundingBox() != null)
-                .toList();
+        List<Intersectable> validGeometries = new ArrayList<>();
+        for (Intersectable geometry : flattenedGeometries) {
+            if (geometry.getBoundingBox() == null) {
+                // Only call createCBR on non-Geometries objects to avoid recursion
+                if (!(geometry instanceof Geometries)) {
+                    geometry.createCBR();
+                }
+            }
+            if (geometry.getBoundingBox() != null) {
+                validGeometries.add(geometry);
+            }
+        }
 
-        if (validGeometries.size() <= 2) return;
+        if (validGeometries.size() <= 2) {
+            geometries.clear();
+            geometries.addAll(validGeometries);
+            return;
+        }
 
+        // Find the best splitting axis and position using SAH (Surface Area Heuristic)
         int bestAxis = -1;
         int bestSplitIndex = -1;
         double bestCost = Double.POSITIVE_INFINITY;
 
-        for (int j = 0; j < 3; j++) {
-            int axis = j;
+        for (int axis = 0; axis < 3; axis++) {
+            // Sort geometries by their center along this axis
             List<Intersectable> sorted = new ArrayList<>(validGeometries);
-            sorted.sort(Comparator.comparingDouble(g -> g.getBoundingBox().center(axis)));
+            final int currentAxis = axis;
+            sorted.sort(Comparator.comparingDouble(g -> g.getBoundingBox().center(currentAxis)));
 
-            List<CBR> leftBounds = new ArrayList<>();
-            List<CBR> rightBounds = new ArrayList<>(Collections.nCopies(sorted.size(), null));
+            // Try different split positions
+            for (int splitIndex = 1; splitIndex < sorted.size(); splitIndex++) {
+                // Calculate bounding boxes for left and right partitions
+                CBR leftBox = null;
+                for (int i = 0; i < splitIndex; i++) {
+                    CBR box = sorted.get(i).getBoundingBox();
+                    leftBox = (leftBox == null) ? box : leftBox.surround(box);
+                }
 
-            // Compute cumulative left bounds
-            CBR leftBox = null;
-            for (int i = 0; i < sorted.size(); i++) {
-                CBR box = sorted.get(i).getBoundingBox();
-                leftBox = (leftBox == null) ? box : leftBox.surround(box);
-                leftBounds.add(leftBox);
-            }
+                CBR rightBox = null;
+                for (int i = splitIndex; i < sorted.size(); i++) {
+                    CBR box = sorted.get(i).getBoundingBox();
+                    rightBox = (rightBox == null) ? box : rightBox.surround(box);
+                }
 
-            // Compute cumulative right bounds
-            CBR rightBox = null;
-            for (int i = sorted.size() - 1; i >= 0; i--) {
-                CBR box = sorted.get(i).getBoundingBox();
-                rightBox = (rightBox == null) ? box : rightBox.surround(box);
-                rightBounds.set(i, rightBox);
-            }
+                if (leftBox != null && rightBox != null) {
+                    // Calculate cost using surface area heuristic
+                    double leftSA = leftBox.surfaceArea();
+                    double rightSA = rightBox.surfaceArea();
+                    int leftCount = splitIndex;
+                    int rightCount = sorted.size() - splitIndex;
+                    double cost = leftSA * leftCount + rightSA * rightCount;
 
-            // Evaluate best split
-            for (int i = 1; i < sorted.size(); i++) {
-                double leftSA = leftBounds.get(i - 1).surfaceArea();
-                double rightSA = rightBounds.get(i).surfaceArea();
-                int leftCount = i;
-                int rightCount = sorted.size() - i;
-                double cost = leftSA * leftCount + rightSA * rightCount;
-
-                if (cost < bestCost) {
-                    bestCost = cost;
-                    bestAxis = axis;
-                    bestSplitIndex = i;
+                    if (cost < bestCost) {
+                        bestCost = cost;
+                        bestAxis = currentAxis;
+                        bestSplitIndex = splitIndex;
+                    }
                 }
             }
         }
 
-        if (bestAxis == -1 || bestSplitIndex == -1) return;
+        // If we couldn't find a good split, don't subdivide
+        if (bestAxis == -1 || bestSplitIndex == -1) {
+            geometries.clear();
+            geometries.addAll(validGeometries);
+            return;
+        }
 
-        // Final split on best axis
+        // Perform the best split
         List<Intersectable> sorted = new ArrayList<>(validGeometries);
-        int axisToSplit = bestAxis;
-        sorted.sort(Comparator.comparingDouble(g -> g.getBoundingBox().center(axisToSplit)));
+        final int splitAxis = bestAxis;
+        sorted.sort(Comparator.comparingDouble(g -> g.getBoundingBox().center(splitAxis)));
 
+        // Create child nodes with flattened geometries
         Geometries left = new Geometries();
         Geometries right = new Geometries();
-        left.geometries.addAll(sorted.subList(0, bestSplitIndex));
-        right.geometries.addAll(sorted.subList(bestSplitIndex, sorted.size()));
 
-        left.createBVH();
-        right.createBVH();
+        for (int i = 0; i < bestSplitIndex; i++) {
+            left.geometries.add(sorted.get(i));
+        }
+        for (int i = bestSplitIndex; i < sorted.size(); i++) {
+            right.geometries.add(sorted.get(i));
+        }
 
-        // Replace this node with BVH children
+        // Recursively build BVH for children with incremented depth
+        left.createBVH(depth + 1);
+        right.createBVH(depth + 1);
+
+        // Replace this node's geometries with the two child nodes
         geometries.clear();
         geometries.add(left);
         geometries.add(right);
 
-        CBR leftBox = (left.getBoundingBox() != null) ? left.getBoundingBox() : left.createCBR();
-        CBR rightBox = (right.getBoundingBox() != null) ? right.getBoundingBox() : right.createCBR();
+        // Update this node's bounding box
+        CBR leftBox = left.getBoundingBox();
+        CBR rightBox = right.getBoundingBox();
+
+        if (leftBox == null) leftBox = left.createCBR();
+        if (rightBox == null) rightBox = right.createCBR();
+
         if (leftBox != null && rightBox != null) {
             setBoundingBox(leftBox.surround(rightBox));
+        } else if (leftBox != null) {
+            setBoundingBox(leftBox);
+        } else if (rightBox != null) {
+            setBoundingBox(rightBox);
+        }
+        System.out.println("geometries");
+    }
+
+    /**
+     * Flattens nested Geometries objects to avoid infinite recursion in BVH creation.
+     * This method recursively extracts all primitive geometries from nested Geometries objects.
+     *
+     * @param source The list of geometries to flatten
+     * @param target The list to add flattened geometries to
+     */
+    private void flattenGeometries(List<Intersectable> source, List<Intersectable> target) {
+        for (Intersectable geometry : source) {
+            if (geometry instanceof Geometries) {
+                // Recursively flatten nested Geometries
+                Geometries nestedGeometries = (Geometries) geometry;
+                flattenGeometries(nestedGeometries.geometries, target);
+            } else {
+                // Add primitive geometry directly
+                target.add(geometry);
+            }
         }
     }
-//    public void createBVH() {
-//        int size = geometries.size();
-//        if (size <= 2) {
-//            // Base case: nothing to subdivide
-//            return;
-//        }
-//
-//        // Calculate this node's bounding box
-//        CBR rootBox = createCBR();
-//        int axis = rootBox.longestAxis();
-//
-//        // Sort geometries in-place by center on longest axis
-//        geometries.sort(Comparator.comparingDouble(g -> {
-//            CBR cbr = g.getBoundingBox();
-//            return cbr != null ? cbr.center(axis) : 0.0;
-//        }));
-//
-//        // Split current list into two halves (in-place)
-//        Geometries left = new Geometries();
-//        Geometries right = new Geometries();
-//
-//        for (int i = 0; i < size; i++) {
-//            if (i < size / 2) {
-//                left.geometries.add(geometries.get(i));
-//            } else {
-//                right.geometries.add(geometries.get(i));
-//            }
-//        }
-//
-//        // Recursively apply BVH to child nodes
-//        left.createBVH();
-//        right.createBVH();
-//
-//        // Replace current list with two BVH children
-//        geometries.clear();
-//        geometries.add(left);
-//        geometries.add(right);
-//
-//        // Safely update this node's bounding box considering nulls
-//        CBR leftBox = left.getBoundingBox();
-//        CBR rightBox = right.getBoundingBox();
-//
-//        if (leftBox == null && rightBox == null) {
-//            this.setBoundingBox(null);
-//        } else if (leftBox == null) {
-//            this.setBoundingBox(rightBox);
-//        } else if (rightBox == null) {
-//            this.setBoundingBox(leftBox);
-//        } else {
-//            this.setBoundingBox(leftBox.surround(rightBox));
-//        }
-//    }
 }
