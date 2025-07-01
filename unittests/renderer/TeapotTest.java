@@ -49,9 +49,9 @@ class TeapotTest {
     @Test
     @Disabled
     void testTeapot3() {
-       // for (int i = 100; i > 0; --i) {
+//        for (int i = 100; i > 0; --i) {
             teapot3();
-       // }
+//        }
     }
 
     /**
@@ -100,7 +100,6 @@ class TeapotTest {
                 .setResolution(1000, 1000) //
                 // .setResolution(1, 1) //
                 .setRayTracer(scene, RayTracerType.SIMPLE) //
-                .setNumRays(3*3)
                 .setLocation(new Point(0, 0, -1000)).setDirection(Point.ZERO, Vector.AXIS_Y) //
                 .setViewPlaneDistance(1000).setViewPlaneSize(200, 200) //
                 // .setMultithreading(-3) // fail - paging file size
@@ -108,6 +107,7 @@ class TeapotTest {
                 // .setMultithreading(-1) // 9.6
                 .setMultithreading(-2) // 25
                 .setDebugPrint(1)
+                .setNumRays(3*3)
                 // .setMultithreading(1) // 25.8
                 // .setMultithreading(2) // 13.6
                 // .setMultithreading(3) // 10.7
