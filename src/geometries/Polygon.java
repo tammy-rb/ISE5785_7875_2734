@@ -114,7 +114,7 @@ public class Polygon extends Geometry {
             else if (z > maxZ) maxZ = z;
         }
 
-        return new AABB(minX, maxX, minY, maxY, minZ, maxZ);
+        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
 

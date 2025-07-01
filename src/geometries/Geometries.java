@@ -95,10 +95,12 @@ public class Geometries extends Intersectable {
                     ? geometry.getBoundingBox()
                     : geometry.createCBR();
 
-            // Combine into the global bounding box
-            if (box != null) {
-                result = (result == null) ? box : result.surround(box);
+            // If any geometry has no bounding box, return null
+            if (box == null) {
+                return null;
             }
+
+            result = (result == null) ? box : result.surround(box);
         }
 
         if (result != null) {
@@ -195,7 +197,4 @@ public class Geometries extends Intersectable {
             setBoundingBox(leftBox.surround(rightBox));
         }
     }
-
-
-
 }

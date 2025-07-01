@@ -347,6 +347,8 @@ class AstronautTest {
         // === CAMERA SETUP ===
         cameraBuilder
                 .setLocation(new Point(0, -10, 100))
+                .enableBVH()
+
                 .setDirection(new Point(0, -5, -50), Vector.AXIS_Y)
                 .setViewPlaneDistance(90)
                 .setViewPlaneSize(120, 120)
