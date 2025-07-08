@@ -1,10 +1,12 @@
-package renderer;
+package renderer.scenesTests;
 
 import org.junit.jupiter.api.Test;
 
 import geometries.*;
 import lighting.*;
 import primitives.*;
+import renderer.Camera;
+import renderer.RayTracerType;
 import scene.Scene;
 
 class AstronautTest {
@@ -356,7 +358,7 @@ class AstronautTest {
                 .setResolution(1200, 1200)
                 .build()
                 .renderImage()
-                .writeToImage("enhancedRealisticAstronaut");
+                .writeToImage("scenesTests/enhancedRealisticAstronaut");
     }
 
     private void addStarField() {

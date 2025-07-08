@@ -94,9 +94,11 @@ public class Geometries extends Intersectable {
             CBR box = (geometry.getBoundingBox() != null)
                     ? geometry.getBoundingBox()
                     : geometry.createCBR();
-
+            if (box == null) {
+                return null;
+            }
             // Combine into the global bounding box
-            if (box != null) {
+            else{
                 result = (result == null) ? box : result.surround(box);
             }
         }
@@ -113,7 +115,7 @@ public class Geometries extends Intersectable {
      * Limited to a maximum recursion depth of 4.
      */
     public void createBVH() {
-        createBVH(0);
+        createBVH(5);
     }
 
     /**

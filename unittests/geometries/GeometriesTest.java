@@ -182,5 +182,4 @@ class GeometriesTest {
         assertEquals(4, geometries.findIntersections(ray14).size(),
                 "Error: Wrong number of intersection points when intersecting all geometries");
     }
-
 }

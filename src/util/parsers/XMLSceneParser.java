@@ -1,4 +1,4 @@
-package parsers.scene;
+package util.parsers;
 
 import java.io.File;
 import java.util.*;
@@ -17,6 +17,13 @@ public class XMLSceneParser implements SceneParser {
         doc.getDocumentElement().normalize();
 
         Element sceneElement = doc.getDocumentElement();
+
+        // Scene name (optional)
+        if (sceneElement.hasAttribute("name")) {
+            sceneData.put("name", sceneElement.getAttribute("name"));
+        }
+
+        // Background color
         String backgroundColor = sceneElement.getAttribute("background-color");
         if (!backgroundColor.isEmpty()) {
             sceneData.put("background-color", backgroundColor);
@@ -51,6 +58,29 @@ public class XMLSceneParser implements SceneParser {
             }
         }
         sceneData.put("geometries", geometries);
+
+        // Lights
+        List<Map<String, String>> lights = new ArrayList<>();
+        NodeList lightsList = doc.getElementsByTagName("lights");
+        if (lightsList.getLength() > 0) {
+            NodeList lightNodes = lightsList.item(0).getChildNodes();
+            for (int i = 0; i < lightNodes.getLength(); i++) {
+                Node node = lightNodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element lightElement = (Element) node;
+                    Map<String, String> lightData = new HashMap<>();
+                    lightData.put("type", lightElement.getNodeName());
+
+                    NamedNodeMap attributes = lightElement.getAttributes();
+                    for (int j = 0; j < attributes.getLength(); j++) {
+                        Node attr = attributes.item(j);
+                        lightData.put(attr.getNodeName(), attr.getNodeValue());
+                    }
+                    lights.add(lightData);
+                }
+            }
+        }
+        sceneData.put("lights", lights);
 
         return sceneData;
     }

@@ -60,7 +60,7 @@ class SuperSamplingTest {
                 .setResolution(400, 400)
                 .build()
                 .renderImage()
-                .writeToImage(pictName);
+                .writeToImage("superSamplingTests/" + pictName);
     }
 
     @Test

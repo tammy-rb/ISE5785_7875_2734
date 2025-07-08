@@ -1,4 +1,4 @@
-package renderer;
+package renderer.scenesTests;
 import static java.awt.Color.YELLOW;
 import static primitives.Util.random;
 
@@ -9,6 +9,8 @@ import static java.lang.Math.*;
 import geometries.*;
 import lighting.PointLight;
 import primitives.*;
+import renderer.Camera;
+import renderer.RayTracerType;
 import scene.Scene;
 
 /**
@@ -29,7 +31,7 @@ class TeapotTest {
                 .build() //
                 .renderImage() //
                 .printGrid(50, new Color(YELLOW)) //
-                .writeToImage("teapot1");
+                .writeToImage("scenesTests/teapot1");
     }
 
     /**
@@ -63,7 +65,7 @@ class TeapotTest {
                 .build() //
                 .renderImage() //
                 .printGrid(50, new Color(YELLOW)) //
-                .writeToImage("teapot2");
+                .writeToImage("scenesTests/teapot2");
     }
 
     /**
@@ -75,7 +77,7 @@ class TeapotTest {
                 .build() //
                 .renderImage() //
                 .printGrid(50, new Color(YELLOW)) //
-                .writeToImage("teapot3");
+                .writeToImage("scenesTests/teapot3");
     }
 
     /**

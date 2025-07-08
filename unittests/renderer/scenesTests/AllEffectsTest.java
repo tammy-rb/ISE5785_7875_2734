@@ -1,12 +1,12 @@
-package renderer;
+package renderer.scenesTests;
 
 import geometries.*;
 import lighting.*;
 import org.junit.jupiter.api.Test;
 import primitives.*;
+import renderer.Camera;
+import renderer.RayTracerType;
 import scene.Scene;
-
-import static java.awt.Color.*;
 
 /**
  * This test class sets up a complex scene with various geometric shapes, materials,
@@ -134,6 +134,6 @@ public class AllEffectsTest {
                 .setNumRays(3 * 3)
                 .build()
                 .renderImage()
-                .writeToImage("CityscapeRender");
+                .writeToImage("scenesTests/CityscapeRender");
     }
 }

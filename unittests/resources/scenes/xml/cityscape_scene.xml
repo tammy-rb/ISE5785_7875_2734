@@ -1,0 +1,33 @@
+<scene name="Cityscape" background-color="0 0 0">
+    <ambient-light color="20 20 20" />
+
+    <geometries>
+        <sphere center="0 0 -400" radius="60" emission="30 30 80"
+                kD="0.2" kS="0.8" shininess="300" kT="0.9" kR="0.05" />
+
+        <sphere center="-100 20 -350" radius="40" emission="10 10 10"
+                kD="0.1" kS="0.9" shininess="500" kR="0.9" />
+
+        <sphere center="100 20 -350" radius="40" emission="150 20 20"
+                kD="0.2" kS="0.4" shininess="200" kT="0.5" />
+
+        <polygon p0="-200 60 -500" p1="200 60 -500" p2="200 60 200" p3="-200 60 200"
+                 emission="50 50 50" kD="0.4" kS="0.6" shininess="150" kR="0.6" />
+
+        <polygon p0="-200 60 -600" p1="200 60 -600" p2="200 -200 -600" p3="-200 -200 -600"
+                 emission="0 20 60" kD="0.1" kS="0.5" shininess="100" kT="0.6" />
+
+        <cylinder radius="10" height="150" p0="-50 60 -450" direction="0 -1 0"
+                  emission="255 215 0" kD="0.3" kS="0.8" shininess="400" kR="0.5" />
+    </geometries>
+
+    <lights>
+        <spot intensity="1000 800 800" position="-100 -150 300" direction="0 1 -1"
+              kL="0.0004" kQ="0.00006" narrowBeam="20" />
+
+        <point intensity="500 100 100" position="150 -100 200"
+               kL="0.0004" kQ="0.0002" />
+
+        <directional intensity="100 100 300" direction="1 -1 -2" />
+    </lights>
+</scene>

@@ -216,12 +216,14 @@
 //    }
 //}
 
-package renderer;
+package renderer.scenesTests;
 
 import geometries.*;
 import lighting.*;
 import org.junit.jupiter.api.Test;
 import primitives.*;
+import renderer.Camera;
+import renderer.RayTracerType;
 import scene.Scene;
 
 public class CityTest {
@@ -341,7 +343,7 @@ public class CityTest {
                 .setDebugPrint(1)
                 .build()
                 .renderImage()
-                .writeToImage("wavySeaSunset");
+                .writeToImage("scenesTests/wavySeaSunset");
     }
 
     /**

@@ -1,4 +1,4 @@
-package parsers.scene;
+package util.parsers;
 import java.util.Map;
 
 public interface SceneParser {
