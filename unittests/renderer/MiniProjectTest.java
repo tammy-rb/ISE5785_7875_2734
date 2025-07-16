@@ -80,7 +80,7 @@ public class MiniProjectTest {
         }
 
         // === SEA SURFACE DISABLED ===
-        createAdvancedSeaSurface(seaLevel);  // COMMENTED OUT
+        createAdvancedSeaSurface(seaLevel);
 
         // Add stars - make them bigger and more visible
         Color starColor = new Color(255, 255, 220);  // Brighter star color
@@ -234,41 +234,44 @@ public class MiniProjectTest {
     /**
      * Sets up advanced lighting for optimal glitter path visibility
      */
+    /**
+     * Sets up advanced lighting for optimal glitter path visibility
+     */
     private void setupAdvancedLighting(Point moonCenter) {
         // Primary moon light - bright enough to create strong glitter path
         scene.lights.add(
-                new PointLight(new Color(280, 280, 240), moonCenter)
+                new PointLight(new Color(280, 280, 240), moonCenter, 150) // Large radius for soft moon shadows
                         .setKL(0.000003)
                         .setKQ(0.00000008)
         );
 
         // Secondary moon light for enhanced glitter effect
         scene.lights.add(
-                new PointLight(new Color(200, 200, 180), moonCenter.add(new Vector(100, -50, 200)))
+                new PointLight(new Color(200, 200, 180), moonCenter.add(new Vector(100, -50, 200)), 120) // Medium radius
                         .setKL(0.000008)
                         .setKQ(0.0000003)
         );
 
-        // Ambient sky light
+        // Ambient sky light (DirectionalLight doesn't use radius)
         scene.lights.add(
                 new DirectionalLight(new Color(25, 25, 40), new Vector(-0.1, -0.9, -0.4))
         );
 
         // Building lights that will also create glitter paths
         scene.lights.add(
-                new PointLight(new Color(255, 180, 80), new Point(-300, 200, -200))
+                new PointLight(new Color(255, 180, 80), new Point(-300, 200, -200), 80) // Medium radius for building light
                         .setKL(0.00015)
                         .setKQ(0.00002)
         );
 
         scene.lights.add(
-                new PointLight(new Color(80, 180, 255), new Point(400, 250, -300))
+                new PointLight(new Color(80, 180, 255), new Point(400, 250, -300), 75) // Medium radius
                         .setKL(0.00012)
                         .setKQ(0.000015)
         );
 
         scene.lights.add(
-                new PointLight(new Color(255, 120, 180), new Point(0, 180, -100))
+                new PointLight(new Color(255, 120, 180), new Point(0, 180, -100), 70) // Smaller radius for closer light
                         .setKL(0.0002)
                         .setKQ(0.00003)
         );

@@ -95,10 +95,11 @@ public class Geometries extends Intersectable {
                     ? geometry.getBoundingBox()
                     : geometry.createCBR();
 
-            // Combine into the global bounding box
-            if (box != null) {
-                result = (result == null) ? box : result.surround(box);
+            // If any geometry has no bounding box, return null
+            if (box == null) {
+                return null;
             }
+            result = (result == null) ? box : result.surround(box);
         }
 
         if (result != null) {
@@ -113,7 +114,7 @@ public class Geometries extends Intersectable {
      * Limited to a maximum recursion depth of 4.
      */
     public void createBVH() {
-        createBVH(0);
+        createBVH(5);
     }
 
     /**
@@ -123,56 +124,54 @@ public class Geometries extends Intersectable {
      * @param depth Current recursion depth
      */
     private void createBVH(int depth) {
-        // Base case: don't subdivide small lists or if we've reached max depth
+        System.out.println("Entering createBVH at depth " + depth + ", geometry count: " + geometries.size());
+
         if (geometries.size() <= 2 || depth >= 4) {
+            System.out.println("Base case hit at depth " + depth + ", stopping recursion.");
             return;
         }
 
-        // Flatten any nested Geometries to avoid infinite recursion
         List<Intersectable> flattenedGeometries = new ArrayList<>();
         flattenGeometries(geometries, flattenedGeometries);
+        System.out.println("Flattened geometries count: " + flattenedGeometries.size());
 
-        // If after flattening we still have too few geometries, don't build BVH
         if (flattenedGeometries.size() <= 2) {
             geometries.clear();
             geometries.addAll(flattenedGeometries);
+            System.out.println("Too few geometries after flattening. Returning.");
             return;
         }
 
-        // Ensure all geometries have bounding boxes
         List<Intersectable> validGeometries = new ArrayList<>();
         for (Intersectable geometry : flattenedGeometries) {
-            if (geometry.getBoundingBox() == null) {
-                // Only call createCBR on non-Geometries objects to avoid recursion
-                if (!(geometry instanceof Geometries)) {
-                    geometry.createCBR();
-                }
+            if (geometry.getBoundingBox() == null && !(geometry instanceof Geometries)) {
+                geometry.createCBR();
             }
             if (geometry.getBoundingBox() != null) {
                 validGeometries.add(geometry);
             }
         }
 
+        System.out.println("Valid geometries with bounding boxes: " + validGeometries.size());
+
         if (validGeometries.size() <= 2) {
             geometries.clear();
             geometries.addAll(validGeometries);
+            System.out.println("Too few valid geometries for BVH split. Returning.");
             return;
         }
 
-        // Find the best splitting axis and position using SAH (Surface Area Heuristic)
         int bestAxis = -1;
         int bestSplitIndex = -1;
         double bestCost = Double.POSITIVE_INFINITY;
 
         for (int axis = 0; axis < 3; axis++) {
-            // Sort geometries by their center along this axis
             List<Intersectable> sorted = new ArrayList<>(validGeometries);
             final int currentAxis = axis;
             sorted.sort(Comparator.comparingDouble(g -> g.getBoundingBox().center(currentAxis)));
 
-            // Try different split positions
-            for (int splitIndex = 1; splitIndex < sorted.size(); splitIndex++) {
-                // Calculate bounding boxes for left and right partitions
+            System.out.println("sorted.size() " + sorted.size());
+            for (int splitIndex = 1; splitIndex < sorted.size(); splitIndex++){
                 CBR leftBox = null;
                 for (int i = 0; i < splitIndex; i++) {
                     CBR box = sorted.get(i).getBoundingBox();
@@ -186,12 +185,13 @@ public class Geometries extends Intersectable {
                 }
 
                 if (leftBox != null && rightBox != null) {
-                    // Calculate cost using surface area heuristic
                     double leftSA = leftBox.surfaceArea();
                     double rightSA = rightBox.surfaceArea();
                     int leftCount = splitIndex;
                     int rightCount = sorted.size() - splitIndex;
                     double cost = leftSA * leftCount + rightSA * rightCount;
+
+                    System.out.printf("Axis %d, Split %d: cost = %.2f%n", axis, splitIndex, cost);
 
                     if (cost < bestCost) {
                         bestCost = cost;
@@ -202,19 +202,19 @@ public class Geometries extends Intersectable {
             }
         }
 
-        // If we couldn't find a good split, don't subdivide
         if (bestAxis == -1 || bestSplitIndex == -1) {
             geometries.clear();
             geometries.addAll(validGeometries);
+            System.out.println("No suitable split found. Returning.");
             return;
         }
 
-        // Perform the best split
+        System.out.println("Best split axis: " + bestAxis + ", index: " + bestSplitIndex + ", cost: " + bestCost);
+
         List<Intersectable> sorted = new ArrayList<>(validGeometries);
         final int splitAxis = bestAxis;
         sorted.sort(Comparator.comparingDouble(g -> g.getBoundingBox().center(splitAxis)));
 
-        // Create child nodes with flattened geometries
         Geometries left = new Geometries();
         Geometries right = new Geometries();
 
@@ -225,16 +225,15 @@ public class Geometries extends Intersectable {
             right.geometries.add(sorted.get(i));
         }
 
-        // Recursively build BVH for children with incremented depth
+        System.out.println("Splitting into left (" + left.geometries.size() + ") and right (" + right.geometries.size() + ") at depth " + depth);
+
         left.createBVH(depth + 1);
         right.createBVH(depth + 1);
 
-        // Replace this node's geometries with the two child nodes
         geometries.clear();
         geometries.add(left);
         geometries.add(right);
 
-        // Update this node's bounding box
         CBR leftBox = left.getBoundingBox();
         CBR rightBox = right.getBoundingBox();
 
@@ -248,8 +247,10 @@ public class Geometries extends Intersectable {
         } else if (rightBox != null) {
             setBoundingBox(rightBox);
         }
-        System.out.println("geometries");
+
+        System.out.println("Bounding box set at depth " + depth + ", finished processing.");
     }
+
 
     /**
      * Flattens nested Geometries objects to avoid infinite recursion in BVH creation.
