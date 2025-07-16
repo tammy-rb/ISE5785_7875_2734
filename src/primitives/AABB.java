@@ -274,4 +274,16 @@ public class AABB extends CBR {
         double dz = z_max - z_min;
         return 2 * (dx * dy + dx * dz + dy * dz);
     }
+
+    @Override
+    public String toString() {
+        return "AABB{" +
+                "x_min=" + x_min +
+                ", y_min=" + y_min +
+                ", z_min=" + z_min +
+                ", x_max=" + x_max +
+                ", y_max=" + y_max +
+                ", z_max=" + z_max +
+                '}';
+    }
 }

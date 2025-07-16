@@ -104,7 +104,7 @@ class LightsTests {
          .setResolution(500, 500) //
          .build() //
          .renderImage() //
-         .writeToImage("lightSphereDirectional");
+         .writeToImage("lightsTests/lightSphereDirectional");
    }
 
    @Test
@@ -134,7 +134,7 @@ class LightsTests {
               .setResolution(500, 500) //
               .build() //
               .renderImage() //
-              .writeToImage("sphereMultipleLights");
+              .writeToImage("lightsTests/sphereMultipleLights");
    }
 
    /** Produce a picture of a sphere lighted by a point light */
@@ -148,7 +148,7 @@ class LightsTests {
          .setResolution(500, 500) //
          .build() //
          .renderImage() //
-         .writeToImage("lightSpherePoint");
+         .writeToImage("lightsTests/lightSpherePoint");
    }
 
    /** Produce a picture of a sphere lighted by a spotlight */
@@ -162,7 +162,7 @@ class LightsTests {
          .setResolution(500, 500) //
          .build() //
          .renderImage() //
-         .writeToImage("lightSphereSpot");
+         .writeToImage("lightsTests/lightSphereSpot");
    }
 
    /** Produce a picture of two triangles lighted by a directional light */
@@ -174,7 +174,7 @@ class LightsTests {
       camera2.setResolution(500, 500) //
          .build() //
          .renderImage() //
-         .writeToImage("lightTrianglesDirectional");
+         .writeToImage("lightsTests/lightTrianglesDirectional");
    }
 
    /** Produce a picture of two triangles lighted by a point light */
@@ -187,7 +187,7 @@ class LightsTests {
       camera2.setResolution(500, 500) //
          .build() //
          .renderImage() //
-         .writeToImage("lightTrianglesPoint");
+         .writeToImage("lightsTests/lightTrianglesPoint");
    }
 
    /** Produce a picture of two triangles lighted by a spotlight */
@@ -200,7 +200,7 @@ class LightsTests {
       camera2.setResolution(500, 500) //
          .build() //
          .renderImage() //
-         .writeToImage("lightTrianglesSpot");
+         .writeToImage("lightsTests/lightTrianglesSpot");
    }
 
    @Test
@@ -214,7 +214,7 @@ class LightsTests {
       camera2.setResolution(500, 500) //
               .build() //
               .renderImage() //
-              .writeToImage("MultipleLightsTriangles");
+              .writeToImage("lightsTests/MultipleLightsTriangles");
    }
 
    /** Produce a picture of a sphere lighted by a narrow spotlight */
@@ -228,7 +228,7 @@ class LightsTests {
       camera1.setResolution(500, 500) //
          .build() //
          .renderImage() //
-         .writeToImage("lightSphereSpotSharp");
+         .writeToImage("lightsTests/lightSphereSpotSharp");
    }
 
    /** Produce a picture of two triangles lighted by a narrow spotlight */
@@ -241,7 +241,7 @@ class LightsTests {
       camera2.setResolution(500, 500) //
          .build() //
          .renderImage() //
-         .writeToImage("lightTrianglesSpotSharp");
+         .writeToImage("lightsTests/lightTrianglesSpotSharp");
    }
 
 }

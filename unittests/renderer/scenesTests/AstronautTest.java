@@ -1,10 +1,12 @@
-package renderer;
+package renderer.scenesTests;
 
 import org.junit.jupiter.api.Test;
 
 import geometries.*;
 import lighting.*;
 import primitives.*;
+import renderer.Camera;
+import renderer.RayTracerType;
 import scene.Scene;
 
 class AstronautTest {
@@ -347,6 +349,8 @@ class AstronautTest {
         // === CAMERA SETUP ===
         cameraBuilder
                 .setLocation(new Point(0, -10, 100))
+                .enableBVH()
+
                 .setDirection(new Point(0, -5, -50), Vector.AXIS_Y)
                 .setViewPlaneDistance(90)
                 .enableBVH()
@@ -354,7 +358,7 @@ class AstronautTest {
                 .setResolution(1200, 1200)
                 .build()
                 .renderImage()
-                .writeToImage("enhancedRealisticAstronaut");
+                .writeToImage("scenesTests/enhancedRealisticAstronaut");
     }
 
     private void addStarField() {

@@ -180,4 +180,17 @@ class PolygonTests {
                 "Error: Ray doesn't intersect — should return null");
 
     }
+
+    @Test
+    void testCreateBoundingBoxHelper() {
+        Polygon polygon = new Polygon(
+                new Point(-1, -1, 0),
+                new Point(1, -1, 0),
+                new Point(1, 1, 0),
+                new Point(-1, 1, 0)
+        );        CBR expected = new AABB(-1, -1, 0, 1,1, 0);
+        assertEquals(
+                expected,
+                polygon.createCBR());
+    }
 }
